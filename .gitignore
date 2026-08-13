@@ -2,6 +2,8 @@
 Thumbs.db
 *.log
 __pycache__/
+build/.artifacts/
 exports/
 backups/
 private-data/
+*.pat
