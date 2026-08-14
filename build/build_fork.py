@@ -57,7 +57,9 @@ EXPECTED_GOAL_SHA = "cd67d85fc07934caf3c2e23395fc713660ddda0fe611cea244470029a37
 EXPECTED_UNIT_SHA = "e1330709887aeb115ac65dc0023e9372e8c7056b1161d77a51a703d1773a66ab"
 # patch 11 (weight chart y-axis bounds) runs on top of that
 EXPECTED_CHART_SHA = "37638391810ef2babbee71c5482db5c6bc49fe8d3163b2a9a54d78326b4dfd69"
-SHIP_SHA = EXPECTED_CHART_SHA  # what actually goes into fork/
+# patch 12 (weight chart period selector) runs on top of that
+EXPECTED_PERIOD_SHA = "5797758f0e14262c54051165c93129eb91d9c5e2905716a0b07a08f95d1c9a76"
+SHIP_SHA = EXPECTED_PERIOD_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -169,7 +171,16 @@ def patch():
     if sha256(chart) != EXPECTED_CHART_SHA:
         die(f"chart-patched bundle sha mismatch: {sha256(chart)}")
     print(f"[2f] patch 11 (chart axis)  sha256 ok  ({chart.stat().st_size} bytes)")
-    return chart
+
+    period = ARTIFACTS / "titrate-index-period.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch12_chartperiod.py"), str(chart), str(period)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch12_chartperiod.py failed:\n" + r.stdout + r.stderr)
+    if sha256(period) != EXPECTED_PERIOD_SHA:
+        die(f"period-patched bundle sha mismatch: {sha256(period)}")
+    print(f"[2g] patch 12 (chart period)  sha256 ok  ({period.stat().st_size} bytes)")
+    return period
 
 
 # ---------------------------------------------------------------- stage 3
