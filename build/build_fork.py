@@ -63,7 +63,9 @@ EXPECTED_PERIOD_SHA = "5797758f0e14262c54051165c93129eb91d9c5e2905716a0b07a08f95
 EXPECTED_LEVEL_SHA = "0290848e7b5db004b190a76a8af3dc74b3b17ec093fa5ad6e544d7cef59d99c5"
 # patch 14 (sample today at the current time) runs on top of that
 EXPECTED_NOW_SHA = "1b5d6f0bb61a7f9308085186783727d71f9ce4ae441f1ecf0b728e24155b6a35"
-SHIP_SHA = EXPECTED_NOW_SHA  # what actually goes into fork/
+# patch 15 (hide Peptides and Calculator) runs on top of that
+EXPECTED_TRIM_SHA = "14e161b18f1950a00b03de32ef3427bc1352a0b18caefddef01952766d815e1a"
+SHIP_SHA = EXPECTED_TRIM_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -202,7 +204,16 @@ def patch():
     if sha256(now) != EXPECTED_NOW_SHA:
         die(f"now-patched bundle sha mismatch: {sha256(now)}")
     print(f"[2i] patch 14 (sample now)  sha256 ok  ({now.stat().st_size} bytes)")
-    return now
+
+    trim = ARTIFACTS / "titrate-index-trim.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch15_trim.py"), str(now), str(trim)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch15_trim.py failed:\n" + r.stdout + r.stderr)
+    if sha256(trim) != EXPECTED_TRIM_SHA:
+        die(f"trim-patched bundle sha mismatch: {sha256(trim)}")
+    print(f"[2j] patch 15 (trim tabs)  sha256 ok  ({trim.stat().st_size} bytes)")
+    return trim
 
 
 # ---------------------------------------------------------------- stage 3
