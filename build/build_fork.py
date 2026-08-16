@@ -61,7 +61,9 @@ EXPECTED_CHART_SHA = "37638391810ef2babbee71c5482db5c6bc49fe8d3163b2a9a54d78326b
 EXPECTED_PERIOD_SHA = "5797758f0e14262c54051165c93129eb91d9c5e2905716a0b07a08f95d1c9a76"
 # patch 13 (current level marker on the dose chart) runs on top of that
 EXPECTED_LEVEL_SHA = "0290848e7b5db004b190a76a8af3dc74b3b17ec093fa5ad6e544d7cef59d99c5"
-SHIP_SHA = EXPECTED_LEVEL_SHA  # what actually goes into fork/
+# patch 14 (sample today at the current time) runs on top of that
+EXPECTED_NOW_SHA = "1b5d6f0bb61a7f9308085186783727d71f9ce4ae441f1ecf0b728e24155b6a35"
+SHIP_SHA = EXPECTED_NOW_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -191,7 +193,16 @@ def patch():
     if sha256(level) != EXPECTED_LEVEL_SHA:
         die(f"level-patched bundle sha mismatch: {sha256(level)}")
     print(f"[2h] patch 13 (current level)  sha256 ok  ({level.stat().st_size} bytes)")
-    return level
+
+    now = ARTIFACTS / "titrate-index-now.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch14_samplenow.py"), str(level), str(now)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch14_samplenow.py failed:\n" + r.stdout + r.stderr)
+    if sha256(now) != EXPECTED_NOW_SHA:
+        die(f"now-patched bundle sha mismatch: {sha256(now)}")
+    print(f"[2i] patch 14 (sample now)  sha256 ok  ({now.stat().st_size} bytes)")
+    return now
 
 
 # ---------------------------------------------------------------- stage 3
