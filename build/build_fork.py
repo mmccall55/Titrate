@@ -65,7 +65,9 @@ EXPECTED_LEVEL_SHA = "0290848e7b5db004b190a76a8af3dc74b3b17ec093fa5ad6e544d7cef5
 EXPECTED_NOW_SHA = "1b5d6f0bb61a7f9308085186783727d71f9ce4ae441f1ecf0b728e24155b6a35"
 # patch 15 (hide Peptides and Calculator) runs on top of that
 EXPECTED_TRIM_SHA = "14e161b18f1950a00b03de32ef3427bc1352a0b18caefddef01952766d815e1a"
-SHIP_SHA = EXPECTED_TRIM_SHA  # what actually goes into fork/
+# patch 16 (Total Doses card reads totalDoses) runs on top of that
+EXPECTED_TOTAL_SHA = "c12bae59191c5f5b86da0060a2719e890614b43bac5af918cdbcc4b7da5af780"
+SHIP_SHA = EXPECTED_TOTAL_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -213,7 +215,16 @@ def patch():
     if sha256(trim) != EXPECTED_TRIM_SHA:
         die(f"trim-patched bundle sha mismatch: {sha256(trim)}")
     print(f"[2j] patch 15 (trim tabs)  sha256 ok  ({trim.stat().st_size} bytes)")
-    return trim
+
+    total = ARTIFACTS / "titrate-index-total.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch16_totaldoses.py"), str(trim), str(total)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch16_totaldoses.py failed:\n" + r.stdout + r.stderr)
+    if sha256(total) != EXPECTED_TOTAL_SHA:
+        die(f"total-patched bundle sha mismatch: {sha256(total)}")
+    print(f"[2k] patch 16 (total doses)  sha256 ok  ({total.stat().st_size} bytes)")
+    return total
 
 
 # ---------------------------------------------------------------- stage 3
