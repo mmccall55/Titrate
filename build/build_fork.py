@@ -67,7 +67,9 @@ EXPECTED_NOW_SHA = "1b5d6f0bb61a7f9308085186783727d71f9ce4ae441f1ecf0b728e24155b
 EXPECTED_TRIM_SHA = "14e161b18f1950a00b03de32ef3427bc1352a0b18caefddef01952766d815e1a"
 # patch 16 (Total Doses card reads totalDoses) runs on top of that
 EXPECTED_TOTAL_SHA = "c12bae59191c5f5b86da0060a2719e890614b43bac5af918cdbcc4b7da5af780"
-SHIP_SHA = EXPECTED_TOTAL_SHA  # what actually goes into fork/
+# patch 17 (merge dashboard cards, rename Daily Log) runs on top of that
+EXPECTED_LAYOUT_SHA = "c388a97543015b78bbb3de446fee4e40aea0ef7898332ed2a6f79826fcd37e5a"
+SHIP_SHA = EXPECTED_LAYOUT_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -224,7 +226,16 @@ def patch():
     if sha256(total) != EXPECTED_TOTAL_SHA:
         die(f"total-patched bundle sha mismatch: {sha256(total)}")
     print(f"[2k] patch 16 (total doses)  sha256 ok  ({total.stat().st_size} bytes)")
-    return total
+
+    layout = ARTIFACTS / "titrate-index-layout.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch17_layout.py"), str(total), str(layout)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch17_layout.py failed:\n" + r.stdout + r.stderr)
+    if sha256(layout) != EXPECTED_LAYOUT_SHA:
+        die(f"layout-patched bundle sha mismatch: {sha256(layout)}")
+    print(f"[2l] patch 17 (layout)  sha256 ok  ({layout.stat().st_size} bytes)")
+    return layout
 
 
 # ---------------------------------------------------------------- stage 3
