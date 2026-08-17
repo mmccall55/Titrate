@@ -71,7 +71,9 @@ EXPECTED_TOTAL_SHA = "c12bae59191c5f5b86da0060a2719e890614b43bac5af918cdbcc4b7da
 EXPECTED_LAYOUT_SHA = "c388a97543015b78bbb3de446fee4e40aea0ef7898332ed2a6f79826fcd37e5a"
 # patch 18 (final dashboard card set and order) runs on top of that
 EXPECTED_CARDS_SHA = "46b1164aab5818c1f3dd8f7f8ba4db398205a1123429188f2eeceff14c7242e2"
-SHIP_SHA = EXPECTED_CARDS_SHA  # what actually goes into fork/
+# patch 19 (drop Best Week / Best Month) runs on top of that
+EXPECTED_BEST_SHA = "ff23c8f4593df5cefd946aba41b7f013de7274d8e3aad40326c0f87befe1d786"
+SHIP_SHA = EXPECTED_BEST_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -246,7 +248,16 @@ def patch():
     if sha256(cards) != EXPECTED_CARDS_SHA:
         die(f"cards-patched bundle sha mismatch: {sha256(cards)}")
     print(f"[2m] patch 18 (cards)  sha256 ok  ({cards.stat().st_size} bytes)")
-    return cards
+
+    best = ARTIFACTS / "titrate-index-best.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch19_bestcards.py"), str(cards), str(best)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch19_bestcards.py failed:\n" + r.stdout + r.stderr)
+    if sha256(best) != EXPECTED_BEST_SHA:
+        die(f"best-patched bundle sha mismatch: {sha256(best)}")
+    print(f"[2n] patch 19 (best cards)  sha256 ok  ({best.stat().st_size} bytes)")
+    return best
 
 
 # ---------------------------------------------------------------- stage 3

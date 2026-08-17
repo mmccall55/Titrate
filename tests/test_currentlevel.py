@@ -50,6 +50,24 @@ def doses(names):
     return out
 
 
+def plate_top_y(png_bytes):
+    """
+    Topmost row containing dark label-plate pixels, or None.
+
+    A clipped label runs flush to the top edge of the capture, so a value of 0
+    (or 1) means clipping. This measures the condition directly rather than
+    inferring it from a pixel count, which shifts whenever page height changes.
+    """
+    im = Image.open(BytesIO(png_bytes)).convert("RGB")
+    w, h = im.size
+    px = im.load()
+    for y in range(int(h * 0.5)):
+        for x in range(w):
+            if sum(px[x, y]) < 250:
+                return y
+    return None
+
+
 def plate_pixels(png_bytes):
     """
     Count dark label-plate pixels in the top band of the chart.
@@ -85,12 +103,15 @@ def main():
                 chart = pg.locator("div[_echarts_instance_]").nth(1)
                 chart.scroll_into_view_if_needed()
                 pg.wait_for_timeout(600)
-                plate = plate_pixels(chart.screenshot())
+                shot = chart.screenshot()
+                plate = plate_pixels(shot)
+                top_y = plate_top_y(shot)
 
                 rep.check("LEVEL", f"{label}: current-level marker label is drawn",
                           plate > 800, f"{plate} plate px")
                 rep.check("LEVEL", f"{label}: label is not clipped by the plot top",
-                          plate > 1500, f"{plate} plate px")
+                          top_y is not None and top_y > 1,
+                          f"first dark row at y={top_y}")
 
                 # the marker must disappear along with the data
                 pg.evaluate("""async () => {
