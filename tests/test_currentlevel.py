@@ -22,7 +22,7 @@ from PIL import Image
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent))
 from testlib import serve, BASE, Report  # noqa: E402
 
-TODAY = date(2026, 8, 13)
+TODAY = date.today()  # seed relative to now so the marker is always on-chart
 PROFILE = {"id": 1, "unitSystem": "metric", "age": 35, "gender": "male",
            "height": 180, "activityLevel": 1.2, "goalWeight": 80}
 

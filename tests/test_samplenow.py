@@ -7,9 +7,10 @@ still in the future relative to today's sample and contributed nothing. The
 24-hour absorption ramp fell entirely between two daily samples, so nothing
 appeared to happen until the next day.
 
-The absorption model itself is deliberate and unchanged: a dose ramps linearly
-to full over 24 hours, then decays by half-life. That matches tirzepatide's
-~24h median Tmax, so the peak genuinely lands about a day after injection.
+The absorption model is the patch-20 Bateman curve: first-order absorption
+(ka solved so the peak lands at the medication's Tmax) against first-order
+elimination (ke from the half-life), peak-normalised so a dose peaks at its
+nominal mg. The reimplementation below mirrors the patched v1 exactly.
 
 What this covers: the reported level tracks an independent reimplementation of
 that model continuously through the day, including a dose logged earlier today,
@@ -50,14 +51,28 @@ def build(n_doses, dose_mg, half_life, today):
 
 
 def expected(n_doses, dose_mg, half_life, hours_today):
-    """The app's v1 model, reimplemented independently."""
+    """The app's v1 Bateman model (patch 20), reimplemented independently."""
+    t = half_life if half_life > 0 else 168.0
+    ke = math.log(2) / t
+    tmax = {168: 48, 127: 24, 120: 24, 108: 48, 13: 11}.get(t, min(48.0, max(6.0, 0.2 * t)))
+    tmax = min(tmax, 0.95 / ke)
+    lo, hi = ke * 1.000001, ke * 1e3
+    for _ in range(80):
+        mid = (lo + hi) / 2
+        if math.log(mid / ke) / (mid - ke) > tmax:
+            lo = mid
+        else:
+            hi = mid
+    ka = (lo + hi) / 2
+
+    def f(o):
+        return 0.0 if o < 0 else ka / (ka - ke) * (math.exp(-ke * o) - math.exp(-ka * o))
+
+    pk = f(tmax)
     total = 0.0
     for i in range(n_doses):
         o = hours_today + 24 * 7 * i
-        if o < 0:
-            continue
-        total += dose_mg * (o / 24) if o < 24 else \
-            dose_mg * math.exp(-0.693 * (o - 24) / half_life)
+        total += dose_mg * f(o) / pk
     return total
 
 

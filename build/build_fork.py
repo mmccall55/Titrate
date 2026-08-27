@@ -73,7 +73,9 @@ EXPECTED_LAYOUT_SHA = "c388a97543015b78bbb3de446fee4e40aea0ef7898332ed2a6f79826f
 EXPECTED_CARDS_SHA = "46b1164aab5818c1f3dd8f7f8ba4db398205a1123429188f2eeceff14c7242e2"
 # patch 19 (drop Best Week / Best Month) runs on top of that
 EXPECTED_BEST_SHA = "ff23c8f4593df5cefd946aba41b7f013de7274d8e3aad40326c0f87befe1d786"
-SHIP_SHA = EXPECTED_BEST_SHA  # what actually goes into fork/
+# patch 20 (Bateman-curve level model) runs on top of that
+EXPECTED_BATEMAN_SHA = "78f6ca4ca7b000a6ebf44601a4d9caff1b4790852d38a1914fe58c7be043945d"
+SHIP_SHA = EXPECTED_BATEMAN_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -257,7 +259,16 @@ def patch():
     if sha256(best) != EXPECTED_BEST_SHA:
         die(f"best-patched bundle sha mismatch: {sha256(best)}")
     print(f"[2n] patch 19 (best cards)  sha256 ok  ({best.stat().st_size} bytes)")
-    return best
+
+    bateman = ARTIFACTS / "titrate-index-bateman.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch20_bateman.py"), str(best), str(bateman)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch20_bateman.py failed:\n" + r.stdout + r.stderr)
+    if sha256(bateman) != EXPECTED_BATEMAN_SHA:
+        die(f"bateman-patched bundle sha mismatch: {sha256(bateman)}")
+    print(f"[2o] patch 20 (bateman level)  sha256 ok  ({bateman.stat().st_size} bytes)")
+    return bateman
 
 
 # ---------------------------------------------------------------- stage 3
