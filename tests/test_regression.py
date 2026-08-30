@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Regression cases A-E from GLPAL_HANDOFF.md section 21, run against fork/
+Regression cases A-E from docs-internal/archive/2026-08-13-reverse-engineering.md
+section 21, run against fork/
 in headless Chromium. Each case gets a fresh browser context (fresh IndexedDB).
 
   A  change only the dose amount      -> same compound key, overwritten, no duplicate

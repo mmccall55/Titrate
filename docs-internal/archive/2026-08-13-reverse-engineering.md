@@ -1,3 +1,25 @@
+---
+updated: 2026-08-13
+authority: frozen
+invalidated-by: nothing - this is a point-in-time record and is never updated
+---
+
+> **FROZEN.** This is the original reverse-engineering handoff, written
+> 2026-08-13, preserved verbatim below. It describes the state of the project on
+> that date and contains instructions for work that has since been completed.
+> **Do not read it as current truth.** Current documentation is
+> [ARCHITECTURE.md](../ARCHITECTURE.md), [WORKFLOW.md](../WORKFLOW.md),
+> [GOTCHAS.md](../GOTCHAS.md), [DECISIONS.md](../DECISIONS.md) and
+> [OPEN-ITEMS.md](../OPEN-ITEMS.md).
+>
+> Kept because it is the only record of how the deployed bundle and the
+> IndexedDB schema were recovered (sections 16 and 17). Those console scripts
+> should not be run again - do not re-capture upstream.
+>
+> Two files it refers to were never retained and do not exist anywhere in this
+> project: `glpal-runtime-audit.json` and `GLPAL_HANDOFF.docx`.
+> Its section 1 refers to a section 25 that does not exist; the document ends at 24.
+
 # GLPal Editable-Dose Fork — Complete AI Agent Handoff
 
 **Handoff date:** 2026-08-13  
