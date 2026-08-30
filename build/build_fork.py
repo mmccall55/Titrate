@@ -75,7 +75,9 @@ EXPECTED_CARDS_SHA = "46b1164aab5818c1f3dd8f7f8ba4db398205a1123429188f2eeceff14c
 EXPECTED_BEST_SHA = "ff23c8f4593df5cefd946aba41b7f013de7274d8e3aad40326c0f87befe1d786"
 # patch 20 (Bateman-curve level model) runs on top of that
 EXPECTED_BATEMAN_SHA = "78f6ca4ca7b000a6ebf44601a4d9caff1b4790852d38a1914fe58c7be043945d"
-SHIP_SHA = EXPECTED_BATEMAN_SHA  # what actually goes into fork/
+# patch 21 (year-qualified chart axis categories) runs on top of that
+EXPECTED_AXISYEAR_SHA = "d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc4cdaf941a"
+SHIP_SHA = EXPECTED_AXISYEAR_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -268,7 +270,16 @@ def patch():
     if sha256(bateman) != EXPECTED_BATEMAN_SHA:
         die(f"bateman-patched bundle sha mismatch: {sha256(bateman)}")
     print(f"[2o] patch 20 (bateman level)  sha256 ok  ({bateman.stat().st_size} bytes)")
-    return bateman
+
+    axisyear = ARTIFACTS / "titrate-index-axisyear.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch21_axisyear.py"), str(bateman), str(axisyear)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch21_axisyear.py failed:\n" + r.stdout + r.stderr)
+    if sha256(axisyear) != EXPECTED_AXISYEAR_SHA:
+        die(f"axisyear-patched bundle sha mismatch: {sha256(axisyear)}")
+    print(f"[2p] patch 21 (axis year)  sha256 ok  ({axisyear.stat().st_size} bytes)")
+    return axisyear
 
 
 # ---------------------------------------------------------------- stage 3
