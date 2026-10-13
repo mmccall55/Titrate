@@ -88,6 +88,4 @@ bundle.
 
 ## Backlog, not committed to
 
-- A clean-room rewrite remains the long-term option if the patch chain becomes
-  unmanageable. Not warranted; the chain is 25 patches and still reproduces
-  byte-for-byte.
+Empty. The clean-room rewrite moved to DECISIONS.md with explicit triggers.

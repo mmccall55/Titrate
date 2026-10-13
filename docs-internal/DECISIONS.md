@@ -158,3 +158,18 @@ real use is to erase the log after one confirm. Same technique as patch 15.
 **Rejected:** exporting a CSV before generating demo data — new UI logic for a
 feature with no use.
 
+## Clean-room rewrite deferred, with triggers (2026-10-13)
+
+Not warranted: at 25 patches (20 scripts) the chain reproduces byte-for-byte,
+and each recent change was one anchored script plus one black-box test.
+Upstream publishing a newer bundle (`index-aZASsn-R.js`, seen 2026-10-13) is
+not a trigger, because upstream is never re-captured.
+
+Revisit if any of these happens:
+- a needed change cannot be anchored in the minified bundle without
+  restructuring code across many sites
+- a change would require altering the `GLPalDB` schema
+- the chain stops reproducing byte-for-byte from the pinned capture
+- a patch's anchors start depending on the output of more than one earlier
+  patch in ways that make reordering or dropping a patch impractical
+
