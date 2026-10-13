@@ -10,7 +10,7 @@
     "kge": "weight stats helper - sorted data, min/max, padding, displayDate",
     "Oge": "old weight zoom helper, superseded by __glpalWeightZoom",
     "Hge": "Performance Overview, now a single Time Active card",
-    "Wye": "dosing-plan hook - next due, cost, and a dead currentLevel",
+    "Wye": "dosing-plan hook - next due, cost, countdown; currentLevel always 0 since patch 23",
     "f0e": "peptide injection sparkline (hidden section)",
     "SM": "weight statistics class - BMI, averages, best week/month",
     "xz": "goal-weight picker",

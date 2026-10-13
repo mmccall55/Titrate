@@ -79,7 +79,9 @@ EXPECTED_BATEMAN_SHA = "78f6ca4ca7b000a6ebf44601a4d9caff1b4790852d38a1914fe58c7b
 EXPECTED_AXISYEAR_SHA = "d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc4cdaf941a"
 # patch 22 (doses placed at their recorded time) runs on top of that
 EXPECTED_DOSETIME_SHA = "25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3"
-SHIP_SHA = EXPECTED_DOSETIME_SHA  # what actually goes into fork/
+# patch 23 (remove the unused Wye level calculation) runs on top of that
+EXPECTED_WYELEVEL_SHA = "9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019"
+SHIP_SHA = EXPECTED_WYELEVEL_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -290,7 +292,16 @@ def patch():
     if sha256(dosetime) != EXPECTED_DOSETIME_SHA:
         die(f"dosetime-patched bundle sha mismatch: {sha256(dosetime)}")
     print(f"[2q] patch 22 (dose time)  sha256 ok  ({dosetime.stat().st_size} bytes)")
-    return dosetime
+
+    wyelevel = ARTIFACTS / "titrate-index-wyelevel.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch23_wyelevel.py"), str(dosetime), str(wyelevel)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch23_wyelevel.py failed:\n" + r.stdout + r.stderr)
+    if sha256(wyelevel) != EXPECTED_WYELEVEL_SHA:
+        die(f"wyelevel-patched bundle sha mismatch: {sha256(wyelevel)}")
+    print(f"[2r] patch 23 (Wye level removed)  sha256 ok  ({wyelevel.stat().st_size} bytes)")
+    return wyelevel
 
 
 # ---------------------------------------------------------------- stage 3

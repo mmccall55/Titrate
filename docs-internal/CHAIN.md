@@ -12,9 +12,9 @@ bundle, so this table also proves the chain is linear, complete, and ends
 at what ships.
 
 - pinned upstream bundle: `a561c9f0a86560313b7165758e131b3140807482ba140922035c810f0d7f5631`
-- shipping bundle:        `25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3`
-- patch scripts:           **17**
-- numbered patches:        **22** - the first script applies the
+- shipping bundle:        `9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019`
+- patch scripts:           **18**
+- numbered patches:        **23** - the first script applies the
   original six fixes in one stage, so script count and patch number differ by five
 
 | # | script | artifact | effect |
@@ -36,6 +36,7 @@ at what ships.
 | 15 | `glpal_patch20_bateman.py` | `titrate-index-bateman.js` | Bateman-curve medication level model |
 | 16 | `glpal_patch21_axisyear.py` | `titrate-index-axisyear.js` | year-qualified chart axis categories |
 | 17 | `glpal_patch22_dosetime.py` | `titrate-index-dosetime.js` | place each dose at its recorded time, not local midnight |
+| 18 | `glpal_patch23_wyelevel.py` | `titrate-index-wyelevel.js` | remove the unused medication-level calculation from the dosing-plan hook |
 
 ## SHA-256 links
 
@@ -59,6 +60,7 @@ at what ships.
 | `glpal_patch20_bateman.py` | `ff23c8f4593df5cefd946aba41b7f013de7274d8e3aad40326c0f87befe1d786` | `78f6ca4ca7b000a6ebf44601a4d9caff1b4790852d38a1914fe58c7be043945d` |
 | `glpal_patch21_axisyear.py` | `78f6ca4ca7b000a6ebf44601a4d9caff1b4790852d38a1914fe58c7be043945d` | `d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc4cdaf941a` |
 | `glpal_patch22_dosetime.py` | `d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc4cdaf941a` | `25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3` |
+| `glpal_patch23_wyelevel.py` | `25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3` | `9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019` |
 
 `SHIP_SHA` matches the end of the chain.
 

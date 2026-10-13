@@ -66,6 +66,14 @@ midnight only when there is no valid time.
 
 ## Build
 
+**Lazily imported chunks are invisible to a resource sweep and to stage
+`[4]`.** The bundle has two dynamic `import()` targets: `../web-BkP7LE0t.js`
+(captured separately) and `../MedicationProgressBar-CpSrqVLQ.js` (never
+captured; the Doses screen crashes when a dosing plan is active). Find them
+with a regex over the bundle for `import("../` rather than trusting the
+upstream ZIP. glpal.app answers unknown paths with 200 `text/html`, so a
+status-code check against upstream is not evidence a file exists.
+
 **`docs/` is post-recolour.** Patch anchors lifted from `docs/` will not match,
 because the patches run before the recolour stage. Colour literals in anchors
 must be the original purple — `#B19CD9`, and `rgba(156, 123, 211, …)` in chart

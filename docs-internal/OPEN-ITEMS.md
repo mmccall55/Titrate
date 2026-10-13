@@ -13,17 +13,19 @@ Known limitations and backlog. Nothing here is in progress.
 **Half-life is first-record-wins** per exact medication string. Editing the
 half-life on a later dose has no effect on the curve.
 
-**A dead fourth `v1` call site.** The hook `Wye` computes a `currentLevel` from
-dosing plans that nothing renders — the field appears exactly twice in the
-bundle, both as producers. If it is ever wired up it is wrong four ways: it only
-sums medications with an active protocol covering the date; it takes half-life
-from the protocol and drops the medication silently if that is falsy; it parses
-dose dates with `new Date(record.date)` (UTC midnight) instead of
-`__glpalDoseAt` (local date at the recorded time), a 5–6 hour shift in Chicago
-before even counting the dose time; and it
-matches medications with a lowercasing comparison rather than an exact string.
-It still runs `v1` over every dose on every render of the Doses screen and
-discards the result.
+**Doses screen crashes when a dosing plan is active.** The bundle lazily
+imports `../MedicationProgressBar-CpSrqVLQ.js` (`Bye`, rendered from the dosing
+plan UI). That chunk was never captured: it is not in
+`upstream/glpal-upstream.zip`, not in `docs/`, and glpal.app no longer serves
+it (the path now returns the site's HTML fallback, 200 `text/html`). The import
+404s and the app shows "Oops! Something went wrong". Reproduced 2026-10-13 on
+the patch-21 build (the live site) by seeding one active protocol and opening
+Doses. Same failure class as `web-BkP7LE0t.js`, which was captured separately.
+The build's stage `[4]` does not check dynamic `import()` targets. Undecided.
+
+**Upstream is not frozen.** As of 2026-10-13 `https://glpal.app/app/` serves
+`assets/app/index-aZASsn-R.js`, not the pinned `index-DwosoAbB.js`. The pinned
+capture is unaffected; the "abandoned" label is out of date.
 
 **No source map, no package toolchain, no source-level unit tests.** The bundle
 is the unit; tests are black-box Playwright runs.
@@ -32,6 +34,14 @@ is the unit; tests are black-box Playwright runs.
 Re-capturing upstream invalidates every anchor.
 
 ## Closed
+
+**Unused fourth `v1` call site in `Wye`. Fixed 2026-10-13 by patch 23.** The
+dosing-plan hook computed a `currentLevel` nothing renders, using a calculation
+wrong in four ways (plan-only medications, plan half-life, UTC-midnight dates
+without dose time, normalised name matching). Its loop is removed;
+`currentLevel` is always 0 and `v1` has three callers. In practice the loop only
+ran with an active dosing plan, which currently crashes the Doses screen (see
+Known limitations), so no working screen ever exercised it.
 
 **Tmax per medication. Closed 2026-10-13, no change.** Tmax stays inferred from
 the half-life (`__glpalTmax`). For picker entries the table value is exact
@@ -70,7 +80,6 @@ bundle.
 
 ## Backlog, not committed to
 
-- Fix or delete the dead `Wye` protocol level path.
 - A clean-room rewrite remains the long-term option if the patch chain becomes
-  unmanageable. Not warranted; the chain is 22 patches and still reproduces
+  unmanageable. Not warranted; the chain is 23 patches and still reproduces
   byte-for-byte.

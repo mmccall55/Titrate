@@ -160,7 +160,7 @@ Stable **only** for the pinned upstream SHA. Generated from `build/identifiers.j
 | `kge` | weight stats helper - sorted data, min/max, padding, displayDate |
 | `Oge` | old weight zoom helper, superseded by __glpalWeightZoom |
 | `Hge` | Performance Overview, now a single Time Active card |
-| `Wye` | dosing-plan hook - next due, cost, and a dead currentLevel |
+| `Wye` | dosing-plan hook - next due, cost, countdown; currentLevel always 0 since patch 23 |
 | `f0e` | peptide injection sparkline (hidden section) |
 | `SM` | weight statistics class - BMI, averages, best week/month |
 | `xz` | goal-weight picker |
@@ -200,7 +200,8 @@ Stable **only** for the pinned upstream SHA. Generated from `build/identifiers.j
 
 `v1(doses, halfLifeHours, sampleDate)` is the single source of truth. It is
 called by the Current Level card (`zge`), by both loops in the dose-chart series
-builder (`Vge`), and by a dead protocol path (`Wye`, see OPEN-ITEMS).
+builder (`Vge`). Those are its only three callers; patch 23 removed a fourth,
+unused one in the dosing-plan hook `Wye`.
 
 ### Shipped code (patch 20)
 

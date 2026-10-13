@@ -130,3 +130,13 @@ Accepted limitation: the stored time is when the dose was logged unless edited.
 **Rejected:** honouring the time in the card only — the chart's today point
 would then disagree with the card.
 
+## Patch 23 removes the unused `Wye` level loop rather than fixing it (2026-10-13)
+
+Nothing renders `currentLevel`, so a correct version would be correct code with
+no output. Removing it leaves `v1` with exactly the three callers that agree
+with each other (`zge`, both loops in `Vge`), and a future patch cannot wire up
+the wrong one by accident. The `currentLevel` key is still produced (always 0)
+so the hook's return shape is unchanged.
+
+**Rejected:** fixing it to match the card. **Rejected:** leaving it documented.
+
