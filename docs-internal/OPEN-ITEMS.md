@@ -33,6 +33,15 @@ Re-capturing upstream invalidates every anchor.
 
 ## Closed
 
+**Tmax per medication. Closed 2026-10-13, no change.** Tmax stays inferred from
+the half-life (`__glpalTmax`). For picker entries the table value is exact
+(semaglutide 48 h, tirzepatide 24 h, matching published Tmax). Known gaps,
+accepted: a custom medication whose half-life is not in the table gets
+`clamp(0.2 * t, 6, 48)`; medications sharing a half-life share a Tmax
+(cagrilintide with semaglutide at 168 h, Custom with retatrutide at 120 h). If
+that matters later, the smallest fix is a name-based lookup before the
+half-life table, which needs no schema change.
+
 **Tirzepatide half-life, 117 h vs 127 h. Closed 2026-10-13, no change.** 127 h
 is the medication-picker preset and is what dose records store. 117 h appears
 only in the demo-data generator (`WW`, Settings -> Load Sample Data). Published
@@ -61,7 +70,6 @@ bundle.
 
 ## Backlog, not committed to
 
-- Expose Tmax per medication instead of inferring it from the half-life value.
 - Fix or delete the dead `Wye` protocol level path.
 - A clean-room rewrite remains the long-term option if the patch chain becomes
   unmanageable. Not warranted; the chain is 22 patches and still reproduces
