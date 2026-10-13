@@ -150,3 +150,11 @@ dynamic import so a missing chunk fails the build instead of a screen.
 **Rejected:** hiding the dosing-plan feature (loses working functionality).
 **Deferred:** recovering the original chunk.
 
+## Hide the demo-data button rather than guard it (patch 25, 2026-10-13)
+
+A personal tracker has no use for demo data, and the button's only effect on
+real use is to erase the log after one confirm. Same technique as patch 15.
+
+**Rejected:** exporting a CSV before generating demo data — new UI logic for a
+feature with no use.
+

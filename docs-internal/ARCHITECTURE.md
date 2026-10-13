@@ -386,6 +386,11 @@ Peptides and Calculator are **hidden, not removed** — filtered out of the bott
 nav (the Calculator tab's id is `"dosage"`) and the Peptide Log card is
 short-circuited to `false`. Their stores and records are untouched.
 
+Settings -> Data Management no longer shows **Load Sample Data (Demo)**
+(patch 25). Upstream's button cleared every store after one `window.confirm`
+and wrote demo data. The generator (`WW`, `generateSampleData`) is still in the
+bundle, unreachable.
+
 ## 12. Recolour
 
 A build stage, not a patch. `make_palette.py` maps every purple in the UI to a

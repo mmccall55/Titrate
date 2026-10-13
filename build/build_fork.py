@@ -83,7 +83,9 @@ EXPECTED_DOSETIME_SHA = "25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69
 EXPECTED_WYELEVEL_SHA = "9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019"
 # patch 24 (stub the never-captured MedicationProgressBar chunk) runs on top of that
 EXPECTED_PROGRESSBAR_SHA = "cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723"
-SHIP_SHA = EXPECTED_PROGRESSBAR_SHA  # what actually goes into fork/
+# patch 25 (remove the Load Sample Data button) runs on top of that
+EXPECTED_NODEMO_SHA = "8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7"
+SHIP_SHA = EXPECTED_NODEMO_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -312,7 +314,16 @@ def patch():
     if sha256(progressbar) != EXPECTED_PROGRESSBAR_SHA:
         die(f"progressbar-patched bundle sha mismatch: {sha256(progressbar)}")
     print(f"[2s] patch 24 (progress bar stub)  sha256 ok  ({progressbar.stat().st_size} bytes)")
-    return progressbar
+
+    nodemo = ARTIFACTS / "titrate-index-nodemo.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch25_nodemo.py"), str(progressbar), str(nodemo)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch25_nodemo.py failed:\n" + r.stdout + r.stderr)
+    if sha256(nodemo) != EXPECTED_NODEMO_SHA:
+        die(f"nodemo-patched bundle sha mismatch: {sha256(nodemo)}")
+    print(f"[2t] patch 25 (no demo-data button)  sha256 ok  ({nodemo.stat().st_size} bytes)")
+    return nodemo
 
 
 # ---------------------------------------------------------------- stage 3

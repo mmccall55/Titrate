@@ -138,6 +138,7 @@ PASS/FAIL rows. Each test is a standalone script; run each and read the
 | `test_samplenow.py` | patches 14/20 — card value tracks an independent Bateman reimplementation within 0.10 mg |
 | `test_offline.py` | SW precache, offline cold launch, offline edit, zero egress |
 | `test_axisyear.py` | patch 21 — history line starts at the left edge with one point per day, above and below a year |
+| `test_nodemo.py` | patch 25 — Settings has no demo-data button; Import / Export CSV remains; seeded data untouched |
 | `test_dosingplan.py` | patch 24 — Dashboard and Doses render with an active dosing plan; the missing chunk is never requested |
 | `test_dosetime.py` | patch 22 — card and chart place doses at their recorded time (HH:MM, AM/PM, weekly history); missing or bad time falls back to midnight; negative control is the patch-21 build |
 

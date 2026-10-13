@@ -30,6 +30,10 @@ Re-capturing upstream invalidates every anchor.
 
 ## Closed
 
+**Settings "Load Sample Data (Demo)" erased all data after one confirm. Fixed
+2026-10-13 by patch 25.** The button no longer renders; the generator code
+remains in the bundle, unreachable.
+
 **Doses screen crashed when a dosing plan was active. Fixed 2026-10-13 by patch
 24.** The plan card lazily imported `../MedicationProgressBar-CpSrqVLQ.js`, a
 chunk that was never captured and that glpal.app no longer serves; the 404
@@ -58,7 +62,7 @@ half-life table, which needs no schema change.
 
 **Tirzepatide half-life, 117 h vs 127 h. Closed 2026-10-13, no change.** 127 h
 is the medication-picker preset and is what dose records store. 117 h appears
-only in the demo-data generator (`WW`, Settings -> Load Sample Data). Published
+only in the demo-data generator (`WW`), unreachable since patch 25. Published
 values: study geometric means 104-152 h for subcutaneous dosing (FDA Clinical
 Pharmacology Review, NDA 215866, study GPGA Parts A-C and GPGC); population-PK
 mean 5.4 days, about 130 h, in T2DM at steady state (CPT Pharmacometrics Syst
@@ -85,5 +89,5 @@ bundle.
 ## Backlog, not committed to
 
 - A clean-room rewrite remains the long-term option if the patch chain becomes
-  unmanageable. Not warranted; the chain is 24 patches and still reproduces
+  unmanageable. Not warranted; the chain is 25 patches and still reproduces
   byte-for-byte.

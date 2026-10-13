@@ -12,9 +12,9 @@ bundle, so this table also proves the chain is linear, complete, and ends
 at what ships.
 
 - pinned upstream bundle: `a561c9f0a86560313b7165758e131b3140807482ba140922035c810f0d7f5631`
-- shipping bundle:        `cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723`
-- patch scripts:           **19**
-- numbered patches:        **24** - the first script applies the
+- shipping bundle:        `8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7`
+- patch scripts:           **20**
+- numbered patches:        **25** - the first script applies the
   original six fixes in one stage, so script count and patch number differ by five
 
 | # | script | artifact | effect |
@@ -38,6 +38,7 @@ at what ships.
 | 17 | `glpal_patch22_dosetime.py` | `titrate-index-dosetime.js` | place each dose at its recorded time, not local midnight |
 | 18 | `glpal_patch23_wyelevel.py` | `titrate-index-wyelevel.js` | remove the unused medication-level calculation from the dosing-plan hook |
 | 19 | `glpal_patch24_progressbar.py` | `titrate-index-progressbar.js` | stop the Doses screen crashing when a dosing plan is active |
+| 20 | `glpal_patch25_nodemo.py` | `titrate-index-nodemo.js` | remove the "Load Sample Data (Demo)" button from Settings |
 
 ## SHA-256 links
 
@@ -63,6 +64,7 @@ at what ships.
 | `glpal_patch22_dosetime.py` | `d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc4cdaf941a` | `25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3` |
 | `glpal_patch23_wyelevel.py` | `25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3` | `9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019` |
 | `glpal_patch24_progressbar.py` | `9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019` | `cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723` |
+| `glpal_patch25_nodemo.py` | `cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723` | `8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7` |
 
 `SHIP_SHA` matches the end of the chain.
 
