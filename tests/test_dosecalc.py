@@ -14,6 +14,9 @@ Calculator
   units are ml * 100 rounded to the nearest unit
 - the peak line shows the target to 1 decimal
 - a target below what the current doses already reach shows "No dose needed"
+  on the Peak row with zero dose rows (patch 31)
+- results are shown before any input, as zeros, and sit above the input
+  (patch 31)
 
 Avg Peak (14d)
 - equals the mean of the independent model's local maxima in the last 336 h
@@ -159,6 +162,15 @@ def main():
             present = pg.locator("#glpalTarget").count() == 1
             rep.check("CALC", "calculator is under Log Dose", present)
             if present:
+                txt0 = calc_text(pg)
+                rep.check("CALC", "results shown before any input, as zeros",
+                          "0.00 mg" in txt0 and txt0.count("0.00 ml (0 units)") == 2 and "0.0 mg in ~0 h" in txt0,
+                          txt0.replace("\n", " | "))
+                above = pg.evaluate("""() => { const r=document.querySelector("[data-glpal='dose-calc-results']"),
+                    i=document.getElementById('glpalTarget');
+                    return !!(r && i && (r.compareDocumentPosition(i) & Node.DOCUMENT_POSITION_FOLLOWING)); }""")
+                rep.check("CALC", "results are above the target input", above)
+            if present:
                 for target in (10.1, 12.5, 15.3):
                     pg.fill("#glpalTarget", str(target))
                     pg.wait_for_timeout(700)
@@ -191,11 +203,15 @@ def main():
                 low = 0.5
                 pg.fill("#glpalTarget", str(low))
                 pg.wait_for_timeout(700)
-                rep.check("CALC", "target below current reach shows 'No dose needed'",
-                          "No dose needed" in calc_text(pg) and exact_b(doses, low, minute(datetime.now())) is None)
+                txt = calc_text(pg)
+                rep.check("CALC", "target below current reach shows 'No dose needed' with zero dose rows",
+                          "No dose needed" in txt and "0.00 mg" in txt
+                          and exact_b(doses, low, minute(datetime.now())) is None, txt.replace("\n", " | "))
                 pg.fill("#glpalTarget", "")
                 pg.wait_for_timeout(400)
-                rep.check("CALC", "empty target shows no result", "Dose" not in calc_text(pg))
+                txt = calc_text(pg)
+                rep.check("CALC", "clearing the target returns to zeros",
+                          "0.00 mg" in txt and "0.0 mg in ~0 h" in txt, txt.replace("\n", " | "))
 
             print("\nAvg Peak (14d)")
             got = card_value(pg, "Avg Peak (14d)")

@@ -12,9 +12,9 @@ bundle, so this table also proves the chain is linear, complete, and ends
 at what ships.
 
 - pinned upstream bundle: `a561c9f0a86560313b7165758e131b3140807482ba140922035c810f0d7f5631`
-- shipping bundle:        `49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd`
-- patch scripts:           **25**
-- numbered patches:        **30** - the first script applies the
+- shipping bundle:        `d24fc503a1d812934b081709608d56d30bbbb5e89d9ddf017910afeed2857c43`
+- patch scripts:           **26**
+- numbered patches:        **31** - the first script applies the
   original six fixes in one stage, so script count and patch number differ by five
 
 | # | script | artifact | effect |
@@ -44,6 +44,7 @@ at what ships.
 | 23 | `glpal_patch28_buttonlabels.py` | `titrate-index-labels.js` | rename two buttons |
 | 24 | `glpal_patch29_dosecalc.py` | `titrate-index-dosecalc.js` | dosage calculator under the Log Dose button on the Doses tab |
 | 25 | `glpal_patch30_avgpeak.py` | `titrate-index-avgpeak.js` | "Avg Peak (14d)" card on the Doses tab |
+| 26 | `glpal_patch31_calclayout.py` | `titrate-index-calclayout.js` | dosage calculator: results above the input, always shown |
 
 ## SHA-256 links
 
@@ -75,6 +76,7 @@ at what ships.
 | `glpal_patch28_buttonlabels.py` | `13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371` | `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352` |
 | `glpal_patch29_dosecalc.py` | `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352` | `a9ba5fcf6250d8fab2b230eadfd0c54aed4f5507dc955de7d0769f8494453a4e` |
 | `glpal_patch30_avgpeak.py` | `a9ba5fcf6250d8fab2b230eadfd0c54aed4f5507dc955de7d0769f8494453a4e` | `49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd` |
+| `glpal_patch31_calclayout.py` | `49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd` | `d24fc503a1d812934b081709608d56d30bbbb5e89d9ddf017910afeed2857c43` |
 
 `SHIP_SHA` matches the end of the chain.
 

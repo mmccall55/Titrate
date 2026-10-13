@@ -420,7 +420,10 @@ unchanged; the daily-log dialog's title still reads "Quick Log".
   medication level (mg, one decimal). Output: the dose taken now that makes the
   modelled total level peak at the target, as mg, ml and U-100 syringe units
   for 10 mg/ml and 15 mg/ml vials, plus the projected peak and its time; "No
-  dose needed" if the current doses already reach the target. `__glpalCalc`
+  dose needed" if the current doses already reach the target. Since patch 31
+  the four result rows sit above the input and are always shown: zeros when
+  the input is empty or invalid, and "No dose needed" on the Peak row with
+  zero dose rows when no dose is needed. `__glpalCalc`
   samples the next 7 days at 15-minute steps and bisects the dose, using the
   model's linearity (level = base + dose x unit curve). The new dose takes the
   medication and half-life of the most recent record.

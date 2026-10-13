@@ -95,7 +95,9 @@ EXPECTED_LABELS_SHA = "535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb
 EXPECTED_DOSECALC_SHA = "a9ba5fcf6250d8fab2b230eadfd0c54aed4f5507dc955de7d0769f8494453a4e"
 # patch 30 (Avg Peak (14d) card) runs on top of that
 EXPECTED_AVGPEAK_SHA = "49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd"
-SHIP_SHA = EXPECTED_AVGPEAK_SHA  # what actually goes into fork/
+# patch 31 (calculator results always shown, above the input) runs on top of that
+EXPECTED_CALCLAYOUT_SHA = "d24fc503a1d812934b081709608d56d30bbbb5e89d9ddf017910afeed2857c43"
+SHIP_SHA = EXPECTED_CALCLAYOUT_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -378,7 +380,16 @@ def patch():
     if sha256(avgpeak) != EXPECTED_AVGPEAK_SHA:
         die(f"avgpeak-patched bundle sha mismatch: {sha256(avgpeak)}")
     print(f"[2y] patch 30 (avg peak card)  sha256 ok  ({avgpeak.stat().st_size} bytes)")
-    return avgpeak
+
+    calclayout = ARTIFACTS / "titrate-index-calclayout.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch31_calclayout.py"), str(avgpeak), str(calclayout)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch31_calclayout.py failed:\n" + r.stdout + r.stderr)
+    if sha256(calclayout) != EXPECTED_CALCLAYOUT_SHA:
+        die(f"calclayout-patched bundle sha mismatch: {sha256(calclayout)}")
+    print(f"[2z] patch 31 (calculator layout)  sha256 ok  ({calclayout.stat().st_size} bytes)")
+    return calclayout
 
 
 # ---------------------------------------------------------------- stage 3
