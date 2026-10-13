@@ -43,8 +43,8 @@ chunk that was never captured and that glpal.app no longer serves; the 404
 reached the error boundary. Patch 24 replaces the import with a component that
 renders nothing, so the plan's progress bar is gone. Stage `[4]` of the build
 now fails if any dynamic `import()` target is missing. The crash was live on the
-patch-21 site. If the original chunk is recovered (Wayback, or an old GLPal
-install's cache), ship it like the shim and drop patch 24.
+patch-21 site. Recovering the original chunk is not planned; the dosing-plan feature is
+slated for removal (see Backlog).
 
 **Unused fourth `v1` call site in `Wye`. Fixed 2026-10-13 by patch 23.** The
 dosing-plan hook computed a `currentLevel` nothing renders, using a calculation
@@ -91,4 +91,9 @@ bundle.
 
 ## Backlog, not committed to
 
-Empty. The clean-room rewrite moved to DECISIONS.md with explicit triggers.
+- Remove the dosing-plan feature. Marc's stated intent (2026-10-13), not
+  scheduled. Until then plans stay as they are: patch 24's empty progress bar,
+  the Planned Doses count to 2099. Recovering the original
+  `MedicationProgressBar` chunk is dropped for the same reason.
+
+The clean-room rewrite moved to DECISIONS.md with explicit triggers.
