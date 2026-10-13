@@ -13,11 +13,6 @@ Known limitations and backlog. Nothing here is in progress.
 **Half-life is first-record-wins** per exact medication string. Editing the
 half-life on a later dose has no effect on the curve.
 
-**Preset inconsistency inherited from upstream.** The medication picker uses
-168/127/120/13/108/120 hours; a demo/seed table elsewhere in the bundle uses 117
-for tirzepatide. Not reconciled. Both resolve to Tmax 24, so today it changes
-nothing visible.
-
 **A dead fourth `v1` call site.** The hook `Wye` computes a `currentLevel` from
 dosing plans that nothing renders — the field appears exactly twice in the
 bundle, both as producers. If it is ever wired up it is wrong four ways: it only
@@ -38,6 +33,16 @@ Re-capturing upstream invalidates every anchor.
 
 ## Closed
 
+**Tirzepatide half-life, 117 h vs 127 h. Closed 2026-10-13, no change.** 127 h
+is the medication-picker preset and is what dose records store. 117 h appears
+only in the demo-data generator (`WW`, Settings -> Load Sample Data). Published
+values: study geometric means 104-152 h for subcutaneous dosing (FDA Clinical
+Pharmacology Review, NDA 215866, study GPGA Parts A-C and GPGC); population-PK
+mean 5.4 days, about 130 h, in T2DM at steady state (CPT Pharmacometrics Syst
+Pharmacol 2024, PMC10962491); the label rounds to "approximately 5 days". Both
+values are inside the measured range, and 127 h resolves to Tmax 24 h while
+117 h resolves to 23.4 h, so the curves are effectively identical.
+
 **Dose `time` was discarded. Fixed 2026-10-13 by patch 22.** Doses are placed
 at their recorded time in both the card and the chart; no time means local
 midnight as before.
@@ -56,7 +61,6 @@ bundle.
 
 ## Backlog, not committed to
 
-- Reconcile the 117 vs 127 hour tirzepatide half-life.
 - Expose Tmax per medication instead of inferring it from the half-life value.
 - Fix or delete the dead `Wye` protocol level path.
 - A clean-room rewrite remains the long-term option if the patch chain becomes
