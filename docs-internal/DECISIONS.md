@@ -1,5 +1,5 @@
 ---
-updated: 2026-08-30
+updated: 2026-10-13
 authority: current
 invalidated-by: nothing — append-only; a reversed decision gets a new entry, the old one stays
 ---
@@ -98,3 +98,35 @@ marked non-authoritative. Derived data is generated, never typed.
 Measured cause: the same fact was stated in up to 10 files, two 40 KB documents
 were byte-identical, and the hand-maintained patch table went stale the moment a
 stage was added.
+
+## Chain documents are checked by the build; CHANGELOG.md removed (2026-10-13)
+
+`build_fork.py` stage `[4]` fails if `CHAIN.md` or the identifier table in
+`ARCHITECTURE.md` differs from what `make_docs.py` would generate, so a patch
+stage added without regenerating the patch table fails the build the same way a
+bad SHA does.
+
+`CHANGELOG.md` was deleted. It was generated from `git log`, so every new
+commit made it stale until it was regenerated and the commit amended; a full
+`--check` in the build would have failed after every commit (verified: one
+empty commit on top of `fcab7fd` made `--check` exit 1 on `CHANGELOG.md`). The
+commit messages already are the changelog.
+
+**Rejected:** running the full `--check` in the build. **Rejected:** keeping
+`CHANGELOG.md` and excluding it from `--check` — it would always lag one
+commit.
+
+## Patch 22 honours the dose time, with midnight as the fallback (2026-10-13)
+
+Treating every dose as taken at 00:00 put it up to 24 h early, always in the
+same direction, which overstates the level in the first one to two days after a
+dose. The fix is at the two places that build model input (`Ege`, `zge`), not
+in `v1`, so the model stays byte-identical and the chart's sampling (patch 14)
+is unchanged. A missing or unparseable time keeps the old behaviour, so records
+without a time read exactly as before.
+
+Accepted limitation: the stored time is when the dose was logged unless edited.
+
+**Rejected:** honouring the time in the card only — the chart's today point
+would then disagree with the card.
+

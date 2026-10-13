@@ -1,5 +1,5 @@
 ---
-updated: 2026-08-30
+updated: 2026-10-13
 authority: current
 invalidated-by: a change to the build chain, the test harness, or how the site is deployed
 ---
@@ -36,7 +36,7 @@ refuses to run on unexpected input.
 ## Adding a change
 
 **1. Find the anchor in the last artifact in the chain**, currently
-`build/.artifacts/titrate-index-axisyear.js` (patch 21 output). Run the build
+`build/.artifacts/titrate-index-dosetime.js` (patch 22 output). Run the build
 once to generate it — `.artifacts/` is gitignored.
 
 Do **not** take anchors from `docs/`. `docs/` is post-recolour, so any colour
@@ -71,7 +71,26 @@ Assertions the script must make:
 **3. Wire it into `build/build_fork.py`**: a new `EXPECTED_<X>_SHA` constant, a
 new block in `patch()`, and repoint `SHIP_SHA`.
 
-**4. Build.**
+**4. Regenerate the generated docs.** Do this before building.
+
+```
+python3 build/make_docs.py
+```
+
+Writes `docs-internal/CHAIN.md`, `INDEX.md`, and the identifier table inside
+`ARCHITECTURE.md`. It reads `build_fork.py` and the patch scripts statically, so
+it does not need a build first. Stage `[4]` of the build fails if `CHAIN.md` or
+the identifier table is stale (`make_docs.py --check-chain`). `INDEX.md` is not
+checked by the build; `make_docs.py --check` covers all three.
+
+There is no `CHANGELOG.md`. Commit messages are written as user-visible
+effects, so the changelog is:
+
+```
+git log --reverse --date=short --format='%ad  %s'
+```
+
+**5. Build.**
 
 ```
 python3 build/build_fork.py
@@ -82,25 +101,16 @@ in and out → `[3a]` recolour → `[3]` assemble (icons, index.html rewrite,
 manifest, generated `sw.js`, `.nojekyll`, `robots.txt`) → `[4]` verify (no
 external requests, no missing references, every precache entry exists, exactly
 one `GLPal` string left in the bundle — the DB name — icons are the rebranded
-ones) → `[5]` mirror into `docs/`.
+ones, `CHAIN.md` and the identifier table current) → `[5]` mirror into `docs/`.
 
-Must print through the last patch stage and `[3] fork assembled` with no `FAIL`.
-`git status` should then be clean if nothing actually changed.
+Must print through the last patch stage, `[3] fork assembled` and `[4]` ok
+with no `FAIL`. A `FAIL` at `[4]` stops before `[5]`, so `docs/` is not
+touched. `git status` should then be clean if nothing actually changed.
 
 `node --check docs/assets/app/index-DwosoAbB.js` if node is available.
 
 `GLPAL_WORK`, `GLPAL_ARTIFACTS` and `GLPAL_DEST` override the build's temp,
 artifact and output directories.
-
-**5. Regenerate the generated docs.**
-
-```
-python3 build/make_docs.py
-```
-
-Writes `docs-internal/CHAIN.md`, `CHANGELOG.md`, `INDEX.md`, and the identifier
-table inside `ARCHITECTURE.md`. `--check` fails if the committed files differ,
-which is what keeps the patch table from going stale.
 
 **6. Add or extend a test in `tests/`.** Keep seeds relative to `date.today()`.
 A test pinned to a fixed calendar date goes stale silently.
@@ -127,6 +137,7 @@ PASS/FAIL rows. Each test is a standalone script; run each and read the
 | `test_samplenow.py` | patches 14/20 — card value tracks an independent Bateman reimplementation within 0.10 mg |
 | `test_offline.py` | SW precache, offline cold launch, offline edit, zero egress |
 | `test_axisyear.py` | patch 21 — history line starts at the left edge with one point per day, above and below a year |
+| `test_dosetime.py` | patch 22 — card and chart place doses at their recorded time (HH:MM, AM/PM, weekly history); missing or bad time falls back to midnight; negative control is the patch-21 build |
 
 ### Running tests in the cloud container
 

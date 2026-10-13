@@ -42,11 +42,16 @@ def weights():
 
 
 def doses(names):
+    # time "00:00": since patch 22 the dose time is honoured, and the marker
+    # label sits in the top quarter of the chart (where plate_pixels looks)
+    # only when today's dose has had time to absorb. With "08:00" the label
+    # dropped just below that band at 10:45 and would sit lower still before
+    # 08:00. Midnight keeps the geometry independent of when the test runs.
     out = []
     for n, name in enumerate(names):
         out += [{"date": str(TODAY - timedelta(days=i * 7)), "medication": name,
                  "dose": 7.5 if n == 0 else 4.0, "halfLifeHours": 168,
-                 "isManual": True, "time": "08:00"} for i in range(12)]
+                 "isManual": True, "time": "00:00"} for i in range(12)]
     return out
 
 

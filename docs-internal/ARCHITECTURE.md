@@ -1,5 +1,5 @@
 ---
-updated: 2026-08-30
+updated: 2026-10-13
 authority: current
 invalidated-by: any patch that changes the bundle's behaviour, the Dexie schema, or the level model
 ---
@@ -118,7 +118,7 @@ time from the raw dose records.
 
 ```js
 { date,            // "YYYY-MM-DD" — part of the primary key
-  time,            // "HH:MM" — DISCARDED by the level model, see §7
+  time,            // "HH:MM" (Log Dose form pre-fills the time it opened) — placement of the dose since patch 22, see §7
   medication,      // string — part of the primary key
   dose,            // mg
   halfLifeHours,
@@ -193,6 +193,7 @@ Stable **only** for the pinned upstream SHA. Generated from `build/identifiers.j
 | `__glpalKa` | memoised bisection solving ka so the peak lands at Tmax (patch 20) |
 | `__glpalDayKey` | year-qualified chart axis category, unique per calendar day (patch 21) |
 | `__glpalDayLabel` | strip the year for axis tick display (patch 21) |
+| `__glpalDoseAt` | dose record to a Date at its recorded time, local midnight if none (patch 22) |
 <!-- END GENERATED: identifiers -->
 
 ## 7. Medication level model
@@ -256,10 +257,23 @@ shapes on the same chart. See GOTCHAS.
   carrying that exact medication string. Later records' values are ignored.
   Two spellings of the same drug are two independent series with independently
   sourced half-lives. The card call site also has a `|| 168`.
-- **Dose time** = local midnight. `Ht.parseLocalDate(record.date)`; the `time`
-  field is discarded. Known limitation, see OPEN-ITEMS.
+- **Dose time** = `__glpalDoseAt(record)` (patch 22): local `date` at the
+  hours and minutes of `record.time`. Accepts `H:MM`, `HH:MM`, `HH:MM:SS`,
+  optionally followed by AM/PM. Missing, empty, malformed or out-of-range time
+  falls back to local midnight, the pre-patch-22 behaviour. Used at both
+  places that build model input: `Ege` (chart) and `zge` (card).
+  The stored time is when the dose was logged unless edited, which is not
+  necessarily when it was injected.
 - **Sample time** = now for the Current Level card; local midnight per day on
   the chart, except today, which is sampled at the current time (patch 14).
+
+### What the curve means
+
+Dose time is honoured when recorded; the level curve is a population-average
+one-compartment model with a fixed Tmax per medication, so values near a dose
+show shape, not individual plasma concentration. Label Tmax ranges are wide —
+tirzepatide 8–72 h, semaglutide 1–3 days — so the uncertainty in the curve's
+shape is larger than the correction patch 22 made.
 
 ### Previous model, for reference
 

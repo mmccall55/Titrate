@@ -1,5 +1,5 @@
 ---
-updated: 2026-08-30
+updated: 2026-10-13
 authority: current
 invalidated-by: nothing — entries are only added, or struck through when a fix removes the trap
 ---
@@ -60,8 +60,9 @@ via a no-comma character class.
 correct. Localising them turns a cosmetic bug in the Americas into a data bug in
 positive-offset time zones. Patch 7 asserts none were touched.
 
-**The dose `time` field is discarded** by the level model. Everything is local
-midnight.
+~~**The dose `time` field is discarded** by the level model. Everything is local
+midnight.~~ Fixed by patch 22: doses are placed at their recorded time, local
+midnight only when there is no valid time.
 
 ## Build
 
@@ -112,6 +113,15 @@ what the test would show if the hypothesis were false.
 
 **`test_offline.py` compares the SW cache against every file under `FORK`** and
 cannot pass on a partial copy of `docs/`. Stage the whole tree, fonts included.
+
+**Since patch 22, a seed's dose `time` moves the curve.** A fixed clock time
+such as `"08:00"` makes a level-dependent assertion depend on when the test
+runs: before 08:00 today's dose has not started. `test_currentlevel.py` broke
+this way — its label dropped out of the band it samples — and now seeds
+`"00:00"`. For Tmax-24 medications the recorded-time and midnight curves cross
+near the peak, so a fixed dose time also stops distinguishing patch 22 from
+the old build at some times of day; `test_dosetime.py` places its doses
+relative to now for that reason.
 
 **Keep test seeds relative to `date.today()`.** `test_currentlevel.py` was once
 pinned to 2026-08-13 and went stale silently.

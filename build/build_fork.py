@@ -77,7 +77,9 @@ EXPECTED_BEST_SHA = "ff23c8f4593df5cefd946aba41b7f013de7274d8e3aad40326c0f87befe
 EXPECTED_BATEMAN_SHA = "78f6ca4ca7b000a6ebf44601a4d9caff1b4790852d38a1914fe58c7be043945d"
 # patch 21 (year-qualified chart axis categories) runs on top of that
 EXPECTED_AXISYEAR_SHA = "d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc4cdaf941a"
-SHIP_SHA = EXPECTED_AXISYEAR_SHA  # what actually goes into fork/
+# patch 22 (doses placed at their recorded time) runs on top of that
+EXPECTED_DOSETIME_SHA = "25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3"
+SHIP_SHA = EXPECTED_DOSETIME_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -279,7 +281,16 @@ def patch():
     if sha256(axisyear) != EXPECTED_AXISYEAR_SHA:
         die(f"axisyear-patched bundle sha mismatch: {sha256(axisyear)}")
     print(f"[2p] patch 21 (axis year)  sha256 ok  ({axisyear.stat().st_size} bytes)")
-    return axisyear
+
+    dosetime = ARTIFACTS / "titrate-index-dosetime.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch22_dosetime.py"), str(axisyear), str(dosetime)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch22_dosetime.py failed:\n" + r.stdout + r.stderr)
+    if sha256(dosetime) != EXPECTED_DOSETIME_SHA:
+        die(f"dosetime-patched bundle sha mismatch: {sha256(dosetime)}")
+    print(f"[2q] patch 22 (dose time)  sha256 ok  ({dosetime.stat().st_size} bytes)")
+    return dosetime
 
 
 # ---------------------------------------------------------------- stage 3
@@ -495,12 +506,20 @@ def verify(precache):
         if (FORK / icon).read_bytes() != (BRAND_DIR / icon).read_bytes():
             problems.append(f"{icon} is not the rebranded asset")
 
+    # CHAIN.md and the identifier table are derived from this file and the
+    # patch scripts. A patch stage added without regenerating them is a stale
+    # build, the same as a bad SHA.
+    import make_docs
+    for name in make_docs.stale_chain_docs():
+        problems.append(f"docs-internal/{name} is stale, run build/make_docs.py")
+
     print("\n[4] verification")
     if problems:
         for p in problems:
             print("    FAIL " + p)
         raise SystemExit(1)
-    print("    ok  no external requests, no missing references, all precache entries exist")
+    print("    ok  no external requests, no missing references, all precache entries exist,")
+    print("        chain documents current")
 
 
 # ---------------------------------------------------------------- stage 5

@@ -39,6 +39,7 @@
     "__glpalTmax": "Tmax lookup from the stored half-life (patch 20)",
     "__glpalKa": "memoised bisection solving ka so the peak lands at Tmax (patch 20)",
     "__glpalDayKey": "year-qualified chart axis category, unique per calendar day (patch 21)",
-    "__glpalDayLabel": "strip the year for axis tick display (patch 21)"
+    "__glpalDayLabel": "strip the year for axis tick display (patch 21)",
+    "__glpalDoseAt": "dose record to a Date at its recorded time, local midnight if none (patch 22)"
   }
 }

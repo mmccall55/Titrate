@@ -9,22 +9,28 @@ index, and the minified identifier map. None of it is typed again.
   CHAIN.md         the patch chain, discovered by following SHA-256 links from
                    the pinned upstream bundle - so it also proves the chain is
                    linear and complete
-  CHANGELOG.md     from git log; commit messages are already written as
-                   user-visible effects
   INDEX.md         from the frontmatter of every doc in docs-internal/
   ARCHITECTURE.md  the identifier table, injected between markers, from
                    build/identifiers.json
 
+There is no CHANGELOG.md. Commit messages are written as user-visible
+effects, so the changelog is:
+  git log --reverse --date=short --format='%ad  %s'
+A generated copy could never be current inside the commit that contains it.
+
 Usage:
-  python3 build/make_docs.py            write the files
-  python3 build/make_docs.py --check    exit 1 if any committed file differs
+  python3 build/make_docs.py                write the files
+  python3 build/make_docs.py --check        exit 1 if any committed file differs
+  python3 build/make_docs.py --check-chain  same, CHAIN.md and the identifier
+                                            table only - the documents that go
+                                            stale when a patch stage changes.
+                                            build_fork.py stage [4] runs this.
 """
 
 from pathlib import Path
 import ast
 import json
 import re
-import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent          # build/
@@ -143,38 +149,6 @@ def build_chain() -> str:
     return "\n".join(lines) + "\n"
 
 
-# -------------------------------------------------------------- CHANGELOG.md
-def build_changelog() -> str:
-    log = subprocess.run(
-        ["git", "-C", str(REPO), "log", "--reverse", "--date=short",
-         "--pretty=format:%ad\t%s"],
-        capture_output=True, text=True).stdout.strip().splitlines()
-    lines = [
-        "---",
-        "updated: generated",
-        "generator: build/make_docs.py - do not edit",
-        "authority: current",
-        "invalidated-by: any commit",
-        "---",
-        "",
-        "# Changelog",
-        "",
-        "Generated from `git log`, oldest first. Commit messages are written as",
-        "user-visible effects, so they are the changelog.",
-        "",
-        "Commit hashes are deliberately omitted. A changelog cannot contain the hash",
-        "of the commit that contains it, so printing hashes would leave this file",
-        "permanently stale against `--check`. Use `git log` for hashes.",
-        "",
-        "| date | change |",
-        "|---|---|",
-    ]
-    for line in log:
-        d, msg = line.split("\t", 1)
-        lines.append(f"| {d} | {msg} |")
-    return "\n".join(lines) + "\n"
-
-
 # ------------------------------------------------------------------ INDEX.md
 def frontmatter(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
@@ -200,7 +174,7 @@ def frontmatter(path: Path) -> dict:
 
 
 ORDER = ["ARCHITECTURE.md", "WORKFLOW.md", "GOTCHAS.md", "DECISIONS.md",
-         "OPEN-ITEMS.md", "CHAIN.md", "CHANGELOG.md"]
+         "OPEN-ITEMS.md", "CHAIN.md"]
 
 
 def build_index() -> str:
@@ -260,15 +234,39 @@ def inject(path: Path, block: str) -> str:
 
 
 # ---------------------------------------------------------------------- main
-def main():
-    check = "--check" in sys.argv
-    targets = {
+def chain_targets() -> dict:
+    """Documents derived from the build chain - stale when a patch stage changes."""
+    return {
         DOCS / "CHAIN.md": build_chain(),
-        DOCS / "CHANGELOG.md": build_changelog(),
         DOCS / "ARCHITECTURE.md": inject(DOCS / "ARCHITECTURE.md", build_identifiers()),
     }
-    for p, content in targets.items():
-        if not check:
+
+
+def stale(targets: dict) -> list:
+    return [p.name for p, c in targets.items()
+            if not p.exists() or p.read_text(encoding="utf-8") != c]
+
+
+def stale_chain_docs() -> list:
+    """Names of chain-derived documents that differ from what would be generated.
+
+    Called by build_fork.py stage [4]."""
+    return stale(chain_targets())
+
+
+def main():
+    if "--check-chain" in sys.argv:
+        bad = stale_chain_docs()
+        if bad:
+            print("FAIL: chain documents are stale, run build/make_docs.py: " + ", ".join(bad))
+            raise SystemExit(1)
+        print("chain documents are up to date")
+        return
+
+    check = "--check" in sys.argv
+    targets = chain_targets()
+    if not check:
+        for p, content in targets.items():
             p.write_text(content, encoding="utf-8")
     # INDEX last: it reads the frontmatter of everything above
     idx = build_index()
@@ -277,11 +275,9 @@ def main():
     targets[DOCS / "INDEX.md"] = idx
 
     if check:
-        stale = [p.name for p, c in targets.items()
-                 if not p.exists() or p.read_text(encoding="utf-8") != c]
-        if stale:
-            print("FAIL: generated docs are stale, run build/make_docs.py: "
-                  + ", ".join(stale))
+        bad = stale(targets)
+        if bad:
+            print("FAIL: generated docs are stale, run build/make_docs.py: " + ", ".join(bad))
             raise SystemExit(1)
         print("generated docs are up to date")
     else:
