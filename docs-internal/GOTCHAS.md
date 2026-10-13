@@ -110,8 +110,12 @@ no token is therefore not evidence about the token.
 **The desktop browser pane has its own profile.** `GLPalDB` reads zero records
 there. That is not Marc's data.
 
-**GitHub Pages serves a stale `sw.js` on a plain reload.** Always verify a
-deploy with a cache-busting query string.
+**GitHub Pages serves a stale `sw.js` on a plain reload, and the app's own
+worker answers `fetch()` of any asset from its cache with `ignoreSearch: true`.**
+A cache-busting `fetch()` from a page the worker controls therefore returns the
+previous deploy - on 2026-10-13 this showed the old bundle for ten minutes after
+a successful Pages run. Verify by navigating the pane to the file with a query
+string; navigations are network-first.
 
 ## Testing
 

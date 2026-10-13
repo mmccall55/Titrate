@@ -208,10 +208,14 @@ git -c http.extraHeader="Authorization: Basic $(printf 'x-access-token:%s' \
 GitHub Pages serves `docs/`. The container cannot reach github.io; use the
 desktop browser pane.
 
-- fetch `sw.js` **with a cache-busting query string** — a plain reload serves the
-  stale worker — and check the `titrate-<fingerprint>` cache name matches what
-  the build printed
-- fetch the bundle and count the symbols the patch added
+- **navigate** the pane to `sw.js?cb=<anything>` and check the
+  `titrate-<fingerprint>` cache name matches what the build printed; then
+  navigate to `assets/app/index-DwosoAbB.js?cb=<anything>` and hash
+  `document.body.innerText` against the build's `docs/` bundle SHA
+- do **not** use `fetch()` from an app page: once the worker controls the page,
+  asset requests are answered from its cache with `ignoreSearch: true`, so a
+  cache-busting query still returns the previous version. Navigations are
+  network-first and bypass this.
 - load the app and confirm `GLPalDB` still has its eight stores
 
 The browser pane has its own profile, so `GLPalDB` reads zero records there.
