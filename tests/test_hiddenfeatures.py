@@ -9,10 +9,11 @@ item - so every hidden element would have something to show.
 
 What this covers:
 - Dashboard: no Medication Storage section; weight cards, both charts and
-  "+ Quick Log" still render, and Quick Log still opens
+  "Weight Check-in" (formerly "+ Quick Log", patch 28) still render and it
+  still opens the daily log
 - Doses: no Dosing Plans section and no Cost/Month, Current Dose or Planned
   Doses cards; Total Doses, Current Level and Logged Doses remain and the
-  card grid is 3 columns at desktop width; "+ Log Dose Manually" still opens
+  card grid is 3 columns at desktop width; "Log Dose" (formerly "+ Log Dose Manually", patch 28) still opens
 - Log: the dose log lists the seeded doses
 - no error boundary, no page errors, no request for the never-captured
   MedicationProgressBar chunk
@@ -93,15 +94,17 @@ def main():
 
             print("\nDashboard")
             body = pg.inner_text("body")
+            rep.check("HIDE", "old button labels gone",
+                      "+ Quick Log" not in body)
             rep.check("HIDE", "Medication Storage section hidden",
                       "Medication Storage" not in body and "Add Storage Item" not in body)
             rep.check("HIDE", "weight cards still render", "Current Weight" in body and "Time Active" in body)
             rep.check("HIDE", "both charts still render",
                       pg.locator("div[_echarts_instance_]").count() >= 2,
                       f"{pg.locator('div[_echarts_instance_]').count()} charts")
-            pg.click("button:has-text('Quick Log')")
+            pg.get_by_role("button", name="Weight Check-in", exact=True).click()
             pg.wait_for_timeout(1000)
-            rep.check("HIDE", "Quick Log still opens", "Hydration" in pg.inner_text("body"))
+            rep.check("HIDE", "Weight Check-in button opens the daily log", "Hydration" in pg.inner_text("body"))
             pg.click("button:has-text('Cancel')")
             pg.wait_for_timeout(600)
 
@@ -116,11 +119,12 @@ def main():
                 rep.check("HIDE", f"{card} card hidden", card not in body)
             for card in ("Total Doses", "Current Level", "Logged Doses"):
                 rep.check("HIDE", f"{card} card remains", card in body)
+            rep.check("HIDE", "Log Dose Manually label gone", "Log Dose Manually" not in body)
             cols = pg.evaluate(DOSES_GRID_COLS)
             rep.check("HIDE", "Doses card grid is 3 columns at desktop width", cols == 3, f"{cols} columns")
-            pg.click("button:has-text('Log Dose Manually')")
+            pg.get_by_role("button", name="Log Dose", exact=True).click()
             pg.wait_for_timeout(1000)
-            rep.check("HIDE", "Log Dose Manually still opens", "Cancel" in pg.inner_text("body"))
+            rep.check("HIDE", "Log Dose button opens the dose form", "Cancel" in pg.inner_text("body"))
             pg.locator("button", has_text="Cancel").last.click()
             pg.wait_for_timeout(800)
 

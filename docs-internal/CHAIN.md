@@ -12,9 +12,9 @@ bundle, so this table also proves the chain is linear, complete, and ends
 at what ships.
 
 - pinned upstream bundle: `a561c9f0a86560313b7165758e131b3140807482ba140922035c810f0d7f5631`
-- shipping bundle:        `13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371`
-- patch scripts:           **22**
-- numbered patches:        **27** - the first script applies the
+- shipping bundle:        `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352`
+- patch scripts:           **23**
+- numbered patches:        **28** - the first script applies the
   original six fixes in one stage, so script count and patch number differ by five
 
 | # | script | artifact | effect |
@@ -41,6 +41,7 @@ at what ships.
 | 20 | `glpal_patch25_nodemo.py` | `titrate-index-nodemo.js` | remove the "Load Sample Data (Demo)" button from Settings |
 | 21 | `glpal_patch26_nostorage.py` | `titrate-index-nostorage.js` | hide medication storage |
 | 22 | `glpal_patch27_noplans.py` | `titrate-index-noplans.js` | hide dosing plans |
+| 23 | `glpal_patch28_buttonlabels.py` | `titrate-index-labels.js` | rename two buttons |
 
 ## SHA-256 links
 
@@ -69,6 +70,7 @@ at what ships.
 | `glpal_patch25_nodemo.py` | `cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723` | `8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7` |
 | `glpal_patch26_nostorage.py` | `8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7` | `055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449bd126ce5eda` |
 | `glpal_patch27_noplans.py` | `055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449bd126ce5eda` | `13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371` |
+| `glpal_patch28_buttonlabels.py` | `13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371` | `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352` |
 
 `SHIP_SHA` matches the end of the chain.
 

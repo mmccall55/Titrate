@@ -406,6 +406,10 @@ export/import and `Wye` are untouched. Dose records the plan feature generated
 earlier (not `isManual`) still count as doses; they show without the "Manual"
 label in the Log tab and can be deleted there.
 
+Button labels (patch 28): Dashboard "+ Quick Log" reads **Weight Check-in**;
+Doses "+ Log Dose Manually" reads **Log Dose**. The dialogs they open are
+unchanged; the daily-log dialog's title still reads "Quick Log".
+
 ## 12. Recolour
 
 A build stage, not a patch. `make_palette.py` maps every purple in the UI to a

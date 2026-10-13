@@ -89,7 +89,9 @@ EXPECTED_NODEMO_SHA = "8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a8868
 EXPECTED_NOSTORAGE_SHA = "055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449bd126ce5eda"
 # patch 27 (hide dosing plans) runs on top of that
 EXPECTED_NOPLANS_SHA = "13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371"
-SHIP_SHA = EXPECTED_NOPLANS_SHA  # what actually goes into fork/
+# patch 28 (button labels) runs on top of that
+EXPECTED_LABELS_SHA = "535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352"
+SHIP_SHA = EXPECTED_LABELS_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -345,7 +347,16 @@ def patch():
     if sha256(noplans) != EXPECTED_NOPLANS_SHA:
         die(f"noplans-patched bundle sha mismatch: {sha256(noplans)}")
     print(f"[2v] patch 27 (plans hidden)  sha256 ok  ({noplans.stat().st_size} bytes)")
-    return noplans
+
+    labels = ARTIFACTS / "titrate-index-labels.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch28_buttonlabels.py"), str(noplans), str(labels)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch28_buttonlabels.py failed:\n" + r.stdout + r.stderr)
+    if sha256(labels) != EXPECTED_LABELS_SHA:
+        die(f"labels-patched bundle sha mismatch: {sha256(labels)}")
+    print(f"[2w] patch 28 (button labels)  sha256 ok  ({labels.stat().st_size} bytes)")
+    return labels
 
 
 # ---------------------------------------------------------------- stage 3

@@ -139,7 +139,7 @@ PASS/FAIL rows. Each test is a standalone script; run each and read the
 | `test_offline.py` | SW precache, offline cold launch, offline edit, zero egress |
 | `test_axisyear.py` | patch 21 — history line starts at the left edge with one point per day, above and below a year |
 | `test_nodemo.py` | patch 25 — Settings has no demo-data button; Import / Export CSV remains; seeded data untouched |
-| `test_hiddenfeatures.py` | patches 24, 26, 27 — with a plan and a storage item seeded, storage and plans are hidden, remaining cards, Quick Log, Log Dose, Dose Log and charts work, no crash, chunk never requested, records untouched |
+| `test_hiddenfeatures.py` | patches 24, 26, 27, 28 — button labels renamed; with a plan and a storage item seeded, storage and plans are hidden, remaining cards, Quick Log, Log Dose, Dose Log and charts work, no crash, chunk never requested, records untouched |
 | `test_dosetime.py` | patch 22 — card and chart place doses at their recorded time (HH:MM, AM/PM, weekly history); missing or bad time falls back to midnight; negative control is the patch-21 build |
 
 ### Running tests in the cloud container
