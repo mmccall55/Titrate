@@ -179,6 +179,7 @@ Stable **only** for the pinned upstream SHA. Generated from `build/identifiers.j
 | `Ht` | clock and date helpers - now, nowDate, parseLocalDate, todayString |
 | `ab` | medication colour by index |
 | `Bye` | lazy plan progress bar; the chunk was never captured, stubbed to render nothing (patch 24) |
+| `bye` | Medication Storage dashboard section; render-guarded off since patch 26 |
 
 ### Symbols this fork adds
 
@@ -390,6 +391,20 @@ Settings -> Data Management no longer shows **Load Sample Data (Demo)**
 (patch 25). Upstream's button cleared every store after one `window.confirm`
 and wrote demo data. The generator (`WW`, `generateSampleData`) is still in the
 bundle, unreachable.
+
+**Medication storage and dosing plans are hidden, not removed** (patches 26,
+27), with `!1&&` render guards:
+- Dashboard: the Medication Storage section (`bye`, including its dialog)
+- Doses: the Dosing Plans section (plan list, "+ Custom Plan", "+ Schedule";
+  their dialogs open only from there) and the Cost/Month, Current Dose and
+  Planned Doses cards
+- the Doses card grid is `lg:grid-cols-3`, holding Total Doses, Current Level
+  and Logged Doses
+
+The `protocols` and `medicationStorage` stores, their records, CSV
+export/import and `Wye` are untouched. Dose records the plan feature generated
+earlier (not `isManual`) still count as doses; they show without the "Manual"
+label in the Log tab and can be deleted there.
 
 ## 12. Recolour
 

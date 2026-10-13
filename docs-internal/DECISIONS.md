@@ -173,3 +173,13 @@ Revisit if any of these happens:
 - a patch's anchors start depending on the output of more than one earlier
   patch in ways that make reordering or dropping a patch impractical
 
+## Hide dosing plans and medication storage, don't remove them (patches 26, 27, 2026-10-13)
+
+Marc does not use either feature. Render guards on the sections and their
+cards are five anchors; removing the features would mean unpicking stores,
+hooks, CSV import/export and dialogs from minified code, and dropping the
+stores would break the schema rule. Hiding also makes the plan actions that
+clear and rewrite the medications store unreachable.
+
+**Rejected:** removing the features or their stores.
+

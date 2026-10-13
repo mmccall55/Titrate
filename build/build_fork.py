@@ -85,7 +85,11 @@ EXPECTED_WYELEVEL_SHA = "9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e6274
 EXPECTED_PROGRESSBAR_SHA = "cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723"
 # patch 25 (remove the Load Sample Data button) runs on top of that
 EXPECTED_NODEMO_SHA = "8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7"
-SHIP_SHA = EXPECTED_NODEMO_SHA  # what actually goes into fork/
+# patch 26 (hide medication storage) runs on top of that
+EXPECTED_NOSTORAGE_SHA = "055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449bd126ce5eda"
+# patch 27 (hide dosing plans) runs on top of that
+EXPECTED_NOPLANS_SHA = "13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371"
+SHIP_SHA = EXPECTED_NOPLANS_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -323,7 +327,25 @@ def patch():
     if sha256(nodemo) != EXPECTED_NODEMO_SHA:
         die(f"nodemo-patched bundle sha mismatch: {sha256(nodemo)}")
     print(f"[2t] patch 25 (no demo-data button)  sha256 ok  ({nodemo.stat().st_size} bytes)")
-    return nodemo
+
+    nostorage = ARTIFACTS / "titrate-index-nostorage.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch26_nostorage.py"), str(nodemo), str(nostorage)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch26_nostorage.py failed:\n" + r.stdout + r.stderr)
+    if sha256(nostorage) != EXPECTED_NOSTORAGE_SHA:
+        die(f"nostorage-patched bundle sha mismatch: {sha256(nostorage)}")
+    print(f"[2u] patch 26 (storage hidden)  sha256 ok  ({nostorage.stat().st_size} bytes)")
+
+    noplans = ARTIFACTS / "titrate-index-noplans.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch27_noplans.py"), str(nostorage), str(noplans)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch27_noplans.py failed:\n" + r.stdout + r.stderr)
+    if sha256(noplans) != EXPECTED_NOPLANS_SHA:
+        die(f"noplans-patched bundle sha mismatch: {sha256(noplans)}")
+    print(f"[2v] patch 27 (plans hidden)  sha256 ok  ({noplans.stat().st_size} bytes)")
+    return noplans
 
 
 # ---------------------------------------------------------------- stage 3

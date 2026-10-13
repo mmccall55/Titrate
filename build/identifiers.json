@@ -28,7 +28,8 @@
     "ff": "strip parenthetical from a medication name",
     "Ht": "clock and date helpers - now, nowDate, parseLocalDate, todayString",
     "ab": "medication colour by index",
-    "Bye": "lazy plan progress bar; the chunk was never captured, stubbed to render nothing (patch 24)"
+    "Bye": "lazy plan progress bar; the chunk was never captured, stubbed to render nothing (patch 24)",
+    "bye": "Medication Storage dashboard section; render-guarded off since patch 26"
   },
   "ours": {
     "__glpalUpdateDose": "transactional dose update across a compound-key change (patch 1)",
