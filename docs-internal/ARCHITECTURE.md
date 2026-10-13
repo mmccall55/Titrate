@@ -196,6 +196,11 @@ Stable **only** for the pinned upstream SHA. Generated from `build/identifiers.j
 | `__glpalDayKey` | year-qualified chart axis category, unique per calendar day (patch 21) |
 | `__glpalDayLabel` | strip the year for axis tick display (patch 21) |
 | `__glpalDoseAt` | dose record to a Date at its recorded time, local midnight if none (patch 22) |
+| `__glpalLevels` | group dose records by medication with half-life and dose times, as the card does (patch 29) |
+| `__glpalTotalAt` | total modelled level at a time across all medications (patch 29) |
+| `__glpalCalc` | dose that makes the modelled level peak at a target; linear, bisection over a 7-day window (patch 29) |
+| `__glpalDoseCalc` | dosage calculator component under Log Dose (patch 29) |
+| `__glpalAvgPeak` | average of modelled level peaks in the last 14 days (patch 30) |
 <!-- END GENERATED: identifiers -->
 
 ## 7. Medication level model
@@ -409,6 +414,22 @@ label in the Log tab and can be deleted there.
 Button labels (patch 28): Dashboard "+ Quick Log" reads **Weight Check-in**;
 Doses "+ Log Dose Manually" reads **Log Dose**. The dialogs they open are
 unchanged; the daily-log dialog's title still reads "Quick Log".
+
+**Doses tab additions** (patches 29, 30):
+- **Dosage calculator** under Log Dose (`__glpalDoseCalc`). Input: target
+  medication level (mg, one decimal). Output: the dose taken now that makes the
+  modelled total level peak at the target, as mg, ml and U-100 syringe units
+  for 10 mg/ml and 15 mg/ml vials, plus the projected peak and its time; "No
+  dose needed" if the current doses already reach the target. `__glpalCalc`
+  samples the next 7 days at 15-minute steps and bisects the dose, using the
+  model's linearity (level = base + dose x unit curve). The new dose takes the
+  medication and half-life of the most recent record.
+- **Avg Peak (14d)** card (`__glpalAvgPeak`): the mean of the local maxima of
+  the modelled total level in the last 336 h whose peak has already happened,
+  15-minute sampling; `--` when there are none.
+- Both use `__glpalLevels` / `__glpalTotalAt`, which group records exactly as
+  the Current Level card does. The Doses card grid is `grid-cols-2
+  lg:grid-cols-4`.
 
 ## 12. Recolour
 

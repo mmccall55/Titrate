@@ -13,7 +13,7 @@ What this covers:
   still opens the daily log
 - Doses: no Dosing Plans section and no Cost/Month, Current Dose or Planned
   Doses cards; Total Doses, Current Level and Logged Doses remain and the
-  card grid is 3 columns at desktop width; "Log Dose" (formerly "+ Log Dose Manually", patch 28) still opens
+  card grid is 4 columns at desktop width (3 remaining + Avg Peak from patch 30); "Log Dose" (formerly "+ Log Dose Manually", patch 28) still opens
 - Log: the dose log lists the seeded doses
 - no error boundary, no page errors, no request for the never-captured
   MedicationProgressBar chunk
@@ -121,7 +121,7 @@ def main():
                 rep.check("HIDE", f"{card} card remains", card in body)
             rep.check("HIDE", "Log Dose Manually label gone", "Log Dose Manually" not in body)
             cols = pg.evaluate(DOSES_GRID_COLS)
-            rep.check("HIDE", "Doses card grid is 3 columns at desktop width", cols == 3, f"{cols} columns")
+            rep.check("HIDE", "Doses card grid is 4 columns at desktop width (patch 30 adds Avg Peak)", cols == 4, f"{cols} columns")
             pg.get_by_role("button", name="Log Dose", exact=True).click()
             pg.wait_for_timeout(1000)
             rep.check("HIDE", "Log Dose button opens the dose form", "Cancel" in pg.inner_text("body"))

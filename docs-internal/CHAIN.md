@@ -12,9 +12,9 @@ bundle, so this table also proves the chain is linear, complete, and ends
 at what ships.
 
 - pinned upstream bundle: `a561c9f0a86560313b7165758e131b3140807482ba140922035c810f0d7f5631`
-- shipping bundle:        `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352`
-- patch scripts:           **23**
-- numbered patches:        **28** - the first script applies the
+- shipping bundle:        `49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd`
+- patch scripts:           **25**
+- numbered patches:        **30** - the first script applies the
   original six fixes in one stage, so script count and patch number differ by five
 
 | # | script | artifact | effect |
@@ -42,6 +42,8 @@ at what ships.
 | 21 | `glpal_patch26_nostorage.py` | `titrate-index-nostorage.js` | hide medication storage |
 | 22 | `glpal_patch27_noplans.py` | `titrate-index-noplans.js` | hide dosing plans |
 | 23 | `glpal_patch28_buttonlabels.py` | `titrate-index-labels.js` | rename two buttons |
+| 24 | `glpal_patch29_dosecalc.py` | `titrate-index-dosecalc.js` | dosage calculator under the Log Dose button on the Doses tab |
+| 25 | `glpal_patch30_avgpeak.py` | `titrate-index-avgpeak.js` | "Avg Peak (14d)" card on the Doses tab |
 
 ## SHA-256 links
 
@@ -71,6 +73,8 @@ at what ships.
 | `glpal_patch26_nostorage.py` | `8334d584743780575f8f1ec04809f170feb4699f27a3df604c24a886809d22a7` | `055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449bd126ce5eda` |
 | `glpal_patch27_noplans.py` | `055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449bd126ce5eda` | `13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371` |
 | `glpal_patch28_buttonlabels.py` | `13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371` | `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352` |
+| `glpal_patch29_dosecalc.py` | `535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352` | `a9ba5fcf6250d8fab2b230eadfd0c54aed4f5507dc955de7d0769f8494453a4e` |
+| `glpal_patch30_avgpeak.py` | `a9ba5fcf6250d8fab2b230eadfd0c54aed4f5507dc955de7d0769f8494453a4e` | `49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd` |
 
 `SHIP_SHA` matches the end of the chain.
 

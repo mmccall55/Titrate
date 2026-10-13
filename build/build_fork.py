@@ -91,7 +91,11 @@ EXPECTED_NOSTORAGE_SHA = "055531610e1c54a3488a0bfb9b1a181072fdc6972b78357b38449b
 EXPECTED_NOPLANS_SHA = "13295d53d2b17ac6a543df812bfc5a7ea6358603f46df32f36afca79ed042371"
 # patch 28 (button labels) runs on top of that
 EXPECTED_LABELS_SHA = "535bdacccaed7c4d48b671990266bb6b7a5dd2667fd4f2bdd5068e9eb12f9352"
-SHIP_SHA = EXPECTED_LABELS_SHA  # what actually goes into fork/
+# patch 29 (dosage calculator) runs on top of that
+EXPECTED_DOSECALC_SHA = "a9ba5fcf6250d8fab2b230eadfd0c54aed4f5507dc955de7d0769f8494453a4e"
+# patch 30 (Avg Peak (14d) card) runs on top of that
+EXPECTED_AVGPEAK_SHA = "49111672aaba7538524bff25b5fd9d243f2aa48f6895d2c94925c666228f69fd"
+SHIP_SHA = EXPECTED_AVGPEAK_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -356,7 +360,25 @@ def patch():
     if sha256(labels) != EXPECTED_LABELS_SHA:
         die(f"labels-patched bundle sha mismatch: {sha256(labels)}")
     print(f"[2w] patch 28 (button labels)  sha256 ok  ({labels.stat().st_size} bytes)")
-    return labels
+
+    dosecalc = ARTIFACTS / "titrate-index-dosecalc.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch29_dosecalc.py"), str(labels), str(dosecalc)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch29_dosecalc.py failed:\n" + r.stdout + r.stderr)
+    if sha256(dosecalc) != EXPECTED_DOSECALC_SHA:
+        die(f"dosecalc-patched bundle sha mismatch: {sha256(dosecalc)}")
+    print(f"[2x] patch 29 (dosage calculator)  sha256 ok  ({dosecalc.stat().st_size} bytes)")
+
+    avgpeak = ARTIFACTS / "titrate-index-avgpeak.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch30_avgpeak.py"), str(dosecalc), str(avgpeak)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch30_avgpeak.py failed:\n" + r.stdout + r.stderr)
+    if sha256(avgpeak) != EXPECTED_AVGPEAK_SHA:
+        die(f"avgpeak-patched bundle sha mismatch: {sha256(avgpeak)}")
+    print(f"[2y] patch 30 (avg peak card)  sha256 ok  ({avgpeak.stat().st_size} bytes)")
+    return avgpeak
 
 
 # ---------------------------------------------------------------- stage 3

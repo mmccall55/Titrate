@@ -183,3 +183,24 @@ clear and rewrite the medications store unreachable.
 
 **Rejected:** removing the features or their stores.
 
+## Dosage calculator sizes the dose to the peak, not to today's level (patch 29, 2026-10-13)
+
+Marc chose "method B": the dose that makes the modelled level peak at the
+target, rather than target minus the current level. Because a new tirzepatide
+dose peaks ~24 h after it is taken while the existing level keeps decaying,
+target minus current level undershoots the target by roughly the 24-hour decay
+(about 0.5 mg at a 5 mg weekly steady state). The exact form searches for the
+dose whose actual maximum equals the target; reading the level at exactly Tmax
+overshoots by up to ~1.2% because the combined level peaks a few hours
+earlier.
+
+Tested 2026-10-13 against published tirzepatide PK (FDA Clinical Pharmacology
+Review, NDA 215866: dose-proportional 0.25-15 mg, accumulation ratio ~1.6-1.7,
+half-life 104-152 h, Tmax 8-96 h). Within the model the result is exact; with
+real parameters at the ends of those ranges the realised peak was -10% to
++18.5% of target for a dose 7 days after the last weekly dose, and up to +25%
+for a dose 3 days after. Method A carries the same error about 5 points lower.
+
+**Rejected by Marc:** rounding syringe units down; a warning above 15 mg.
+**Kept:** exact peak solve; a projected-peak line.
+

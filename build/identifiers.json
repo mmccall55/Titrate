@@ -42,6 +42,11 @@
     "__glpalKa": "memoised bisection solving ka so the peak lands at Tmax (patch 20)",
     "__glpalDayKey": "year-qualified chart axis category, unique per calendar day (patch 21)",
     "__glpalDayLabel": "strip the year for axis tick display (patch 21)",
-    "__glpalDoseAt": "dose record to a Date at its recorded time, local midnight if none (patch 22)"
+    "__glpalDoseAt": "dose record to a Date at its recorded time, local midnight if none (patch 22)",
+    "__glpalLevels": "group dose records by medication with half-life and dose times, as the card does (patch 29)",
+    "__glpalTotalAt": "total modelled level at a time across all medications (patch 29)",
+    "__glpalCalc": "dose that makes the modelled level peak at a target; linear, bisection over a 7-day window (patch 29)",
+    "__glpalDoseCalc": "dosage calculator component under Log Dose (patch 29)",
+    "__glpalAvgPeak": "average of modelled level peaks in the last 14 days (patch 30)"
   }
 }
