@@ -178,6 +178,7 @@ Stable **only** for the pinned upstream SHA. Generated from `build/identifiers.j
 | `ff` | strip parenthetical from a medication name |
 | `Ht` | clock and date helpers - now, nowDate, parseLocalDate, todayString |
 | `ab` | medication colour by index |
+| `Bye` | lazy plan progress bar; the chunk was never captured, stubbed to render nothing (patch 24) |
 
 ### Symbols this fork adds
 

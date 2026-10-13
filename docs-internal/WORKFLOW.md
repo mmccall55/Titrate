@@ -101,7 +101,8 @@ in and out → `[3a]` recolour → `[3]` assemble (icons, index.html rewrite,
 manifest, generated `sw.js`, `.nojekyll`, `robots.txt`) → `[4]` verify (no
 external requests, no missing references, every precache entry exists, exactly
 one `GLPal` string left in the bundle — the DB name — icons are the rebranded
-ones, `CHAIN.md` and the identifier table current) → `[5]` mirror into `docs/`.
+ones, `CHAIN.md` and the identifier table current, every dynamic `import()`
+target present) → `[5]` mirror into `docs/`.
 
 Must print through the last patch stage, `[3] fork assembled` and `[4]` ok
 with no `FAIL`. A `FAIL` at `[4]` stops before `[5]`, so `docs/` is not
@@ -137,6 +138,7 @@ PASS/FAIL rows. Each test is a standalone script; run each and read the
 | `test_samplenow.py` | patches 14/20 — card value tracks an independent Bateman reimplementation within 0.10 mg |
 | `test_offline.py` | SW precache, offline cold launch, offline edit, zero egress |
 | `test_axisyear.py` | patch 21 — history line starts at the left edge with one point per day, above and below a year |
+| `test_dosingplan.py` | patch 24 — Dashboard and Doses render with an active dosing plan; the missing chunk is never requested |
 | `test_dosetime.py` | patch 22 — card and chart place doses at their recorded time (HH:MM, AM/PM, weekly history); missing or bad time falls back to midnight; negative control is the patch-21 build |
 
 ### Running tests in the cloud container

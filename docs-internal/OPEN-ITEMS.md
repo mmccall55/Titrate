@@ -13,15 +13,10 @@ Known limitations and backlog. Nothing here is in progress.
 **Half-life is first-record-wins** per exact medication string. Editing the
 half-life on a later dose has no effect on the curve.
 
-**Doses screen crashes when a dosing plan is active.** The bundle lazily
-imports `../MedicationProgressBar-CpSrqVLQ.js` (`Bye`, rendered from the dosing
-plan UI). That chunk was never captured: it is not in
-`upstream/glpal-upstream.zip`, not in `docs/`, and glpal.app no longer serves
-it (the path now returns the site's HTML fallback, 200 `text/html`). The import
-404s and the app shows "Oops! Something went wrong". Reproduced 2026-10-13 on
-the patch-21 build (the live site) by seeding one active protocol and opening
-Doses. Same failure class as `web-BkP7LE0t.js`, which was captured separately.
-The build's stage `[4]` does not check dynamic `import()` targets. Undecided.
+**Planned Doses counts to 2099 for an ongoing plan.** The Doses screen's
+Planned Doses card showed 3820 for one weekly plan started 24 days earlier. The
+hook `Wye` treats a plan with no stop date as ending 2099-12-31. Upstream
+behaviour, seen 2026-10-13 while testing patch 24; not investigated further.
 
 **Upstream is not frozen.** As of 2026-10-13 `https://glpal.app/app/` serves
 `assets/app/index-aZASsn-R.js`, not the pinned `index-DwosoAbB.js`. The pinned
@@ -34,6 +29,15 @@ is the unit; tests are black-box Playwright runs.
 Re-capturing upstream invalidates every anchor.
 
 ## Closed
+
+**Doses screen crashed when a dosing plan was active. Fixed 2026-10-13 by patch
+24.** The plan card lazily imported `../MedicationProgressBar-CpSrqVLQ.js`, a
+chunk that was never captured and that glpal.app no longer serves; the 404
+reached the error boundary. Patch 24 replaces the import with a component that
+renders nothing, so the plan's progress bar is gone. Stage `[4]` of the build
+now fails if any dynamic `import()` target is missing. The crash was live on the
+patch-21 site. If the original chunk is recovered (Wayback, or an old GLPal
+install's cache), ship it like the shim and drop patch 24.
 
 **Unused fourth `v1` call site in `Wye`. Fixed 2026-10-13 by patch 23.** The
 dosing-plan hook computed a `currentLevel` nothing renders, using a calculation
@@ -81,5 +85,5 @@ bundle.
 ## Backlog, not committed to
 
 - A clean-room rewrite remains the long-term option if the patch chain becomes
-  unmanageable. Not warranted; the chain is 23 patches and still reproduces
+  unmanageable. Not warranted; the chain is 24 patches and still reproduces
   byte-for-byte.

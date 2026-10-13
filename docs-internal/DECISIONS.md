@@ -140,3 +140,13 @@ so the hook's return shape is unchanged.
 
 **Rejected:** fixing it to match the card. **Rejected:** leaving it documented.
 
+## Patch 24 stubs the missing progress-bar chunk instead of hiding plans (2026-10-13)
+
+The chunk cannot be fetched from upstream any more, and no copy was found. A
+component that renders nothing keeps dosing plans usable (next due, countdown,
+the plan list) at the cost of the progress bar. Stage `[4]` also checks every
+dynamic import so a missing chunk fails the build instead of a screen.
+
+**Rejected:** hiding the dosing-plan feature (loses working functionality).
+**Deferred:** recovering the original chunk.
+

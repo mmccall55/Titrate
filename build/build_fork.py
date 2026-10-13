@@ -81,7 +81,9 @@ EXPECTED_AXISYEAR_SHA = "d02bc0329c5c0fd7d8629d26f3944bafdf349bbdf658013da4428dc
 EXPECTED_DOSETIME_SHA = "25c35ae27dbaacf6ba5573278fe454ad1ffe8a6c9e3e75b0044ee69ab4cf76e3"
 # patch 23 (remove the unused Wye level calculation) runs on top of that
 EXPECTED_WYELEVEL_SHA = "9a2e5b39cb4d253cdea5b8c66a985adff38154adaf8426dd68e62741b0449019"
-SHIP_SHA = EXPECTED_WYELEVEL_SHA  # what actually goes into fork/
+# patch 24 (stub the never-captured MedicationProgressBar chunk) runs on top of that
+EXPECTED_PROGRESSBAR_SHA = "cb28ba6620061907c58b525223183d4918a615a471049856e72e2680da9db723"
+SHIP_SHA = EXPECTED_PROGRESSBAR_SHA  # what actually goes into fork/
 
 BRAND = "Titrate"
 BRAND_LONG = "Titrate - GLP-1 Tracker"
@@ -301,7 +303,16 @@ def patch():
     if sha256(wyelevel) != EXPECTED_WYELEVEL_SHA:
         die(f"wyelevel-patched bundle sha mismatch: {sha256(wyelevel)}")
     print(f"[2r] patch 23 (Wye level removed)  sha256 ok  ({wyelevel.stat().st_size} bytes)")
-    return wyelevel
+
+    progressbar = ARTIFACTS / "titrate-index-progressbar.js"
+    r = subprocess.run([sys.executable, str(ROOT / "glpal_patch24_progressbar.py"), str(wyelevel), str(progressbar)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("glpal_patch24_progressbar.py failed:\n" + r.stdout + r.stderr)
+    if sha256(progressbar) != EXPECTED_PROGRESSBAR_SHA:
+        die(f"progressbar-patched bundle sha mismatch: {sha256(progressbar)}")
+    print(f"[2s] patch 24 (progress bar stub)  sha256 ok  ({progressbar.stat().st_size} bytes)")
+    return progressbar
 
 
 # ---------------------------------------------------------------- stage 3
@@ -480,8 +491,26 @@ self.addEventListener('fetch', (event) => {
 
 
 # ---------------------------------------------------------------- stage 4
+def missing_dynamic_imports(fork: Path) -> list:
+    """Dynamic import() targets in the shipped bundle that do not exist in fork.
+
+    Lazily imported chunks are invisible to a resource sweep, and a missing one
+    only fails when the code path that loads it runs - the never-captured
+    MedicationProgressBar chunk crashed the Doses screen this way (patch 24).
+    """
+    bundle = fork / BUNDLE_REL
+    text = bundle.read_text(encoding="utf-8", errors="replace")
+    missing = []
+    for ref in re.findall(r'import\("([^"]+)"\)', text):
+        if ref.startswith((".", "/")) and not (bundle.parent / ref).resolve().exists():
+            missing.append(ref)
+    return missing
+
+
 def verify(precache):
     problems = []
+    for ref in missing_dynamic_imports(FORK):
+        problems.append(f"bundle dynamically imports {ref}, which is not in the build")
     html = (FORK / "index.html").read_text(encoding="utf-8")
     css = (FORK / CSS_REL).read_text(encoding="utf-8", errors="replace")
     fonts = (FORK / "fonts.css").read_text(encoding="utf-8")
@@ -530,7 +559,7 @@ def verify(precache):
             print("    FAIL " + p)
         raise SystemExit(1)
     print("    ok  no external requests, no missing references, all precache entries exist,")
-    print("        chain documents current")
+    print("        chain documents current, every dynamic import present")
 
 
 # ---------------------------------------------------------------- stage 5

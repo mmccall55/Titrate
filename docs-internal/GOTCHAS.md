@@ -69,9 +69,9 @@ midnight only when there is no valid time.
 **Lazily imported chunks are invisible to a resource sweep and to stage
 `[4]`.** The bundle has two dynamic `import()` targets: `../web-BkP7LE0t.js`
 (captured separately) and `../MedicationProgressBar-CpSrqVLQ.js` (never
-captured; the Doses screen crashes when a dosing plan is active). Find them
-with a regex over the bundle for `import("../` rather than trusting the
-upstream ZIP. glpal.app answers unknown paths with 200 `text/html`, so a
+captured; it crashed the Doses screen when a dosing plan was active, until
+patch 24 stubbed it). Stage `[4]` now fails on any missing `import()` target;
+before that nothing checked them. glpal.app answers unknown paths with 200 `text/html`, so a
 status-code check against upstream is not evidence a file exists.
 
 **`docs/` is post-recolour.** Patch anchors lifted from `docs/` will not match,
