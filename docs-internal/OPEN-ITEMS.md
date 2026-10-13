@@ -16,7 +16,10 @@ half-life on a later dose has no effect on the curve.
 **Planned Doses counts to 2099 for an ongoing plan.** The Doses screen's
 Planned Doses card showed 3820 for one weekly plan started 24 days earlier. The
 hook `Wye` treats a plan with no stop date as ending 2099-12-31. Upstream
-behaviour, seen 2026-10-13 while testing patch 24; not investigated further.
+behaviour, seen 2026-10-13 while testing patch 24. Accepted 2026-10-13, no
+change, Marc's call. With no active plan the card reads 0. If plans come into
+use, the fix is to show `Wye`'s `plannedDoses` (doses due in the next month,
+computed but not rendered) and relabel the card.
 
 **Upstream is not frozen.** As of 2026-10-13 `https://glpal.app/app/` serves
 `assets/app/index-aZASsn-R.js`, not the pinned `index-DwosoAbB.js`. The pinned
