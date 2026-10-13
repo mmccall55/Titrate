@@ -23,7 +23,7 @@ Avg Peak (14d)
 - a dose whose peak is still ahead is not counted
 - no peaks in the window shows "--"
 
-Layout: the four Doses cards are 2 columns at phone width and 4 at desktop.
+Layout: since patch 32 the three Doses cards are one row of 3 at any width.
 
 Negative control: the patch-28 build has no calculator and no card, so every
 check fails there.
@@ -52,7 +52,7 @@ SEED = """async (d) => {
 STORES_READY = """() => new Promise(r => { const q = indexedDB.open('GLPalDB');
   q.onsuccess = () => { const ok = q.result.objectStoreNames.contains('medications');
   q.result.close(); r(ok); }; q.onerror = () => r(false); })"""
-GRID_COLS = """() => { const t=[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Total Doses');
+GRID_COLS = """() => { const t=[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Current Level');
   const g=t&&t.closest('.grid'); return g?getComputedStyle(g).gridTemplateColumns.split(' ').length:null; }"""
 PROFILE = {"id": 1, "unitSystem": "metric", "age": 35, "gender": "male", "height": 180,
            "activityLevel": 1.2, "goalWeight": 80}
@@ -220,7 +220,7 @@ def main():
                       got not in (None, "--") and want is not None and abs(float(got[:-2]) - want) < 0.02,
                       f"app {got}, independent {want:.3f}" if want else f"app {got}")
             cols = pg.evaluate(GRID_COLS)
-            rep.check("PEAK", "4 cards in one row at desktop width (1280 px; lg starts at 1024)", cols == 4, f"{cols} columns")
+            rep.check("PEAK", "3 cards in one row at desktop width (patch 32)", cols == 3, f"{cols} columns")
             ctx.close()
 
             # a dose 4 h ago: its peak is still ahead and must not be counted
@@ -239,7 +239,7 @@ def main():
             rep.check("PEAK", "no peaks in the window shows --", card_value(pg, "Avg Peak (14d)") == "--",
                       f"{card_value(pg, 'Avg Peak (14d)')}")
             cols = pg.evaluate(GRID_COLS)
-            rep.check("PEAK", "2 columns at phone width", cols == 2, f"{cols} columns")
+            rep.check("PEAK", "3 cards in one row at phone width (patch 32)", cols == 3, f"{cols} columns")
             ctx.close()
             b.close()
     finally:

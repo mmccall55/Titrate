@@ -12,8 +12,9 @@ What this covers:
   "Weight Check-in" (formerly "+ Quick Log", patch 28) still render and it
   still opens the daily log
 - Doses: no Dosing Plans section and no Cost/Month, Current Dose or Planned
-  Doses cards; Total Doses, Current Level and Logged Doses remain and the
-  card grid is 4 columns at desktop width (3 remaining + Avg Peak from patch 30); "Log Dose" (formerly "+ Log Dose Manually", patch 28) still opens
+  Doses cards, nor Total Doses (patch 32); Current Level, Logged Doses and
+  Avg Peak (14d) remain and the
+  card grid is 3 columns; "Log Dose" (formerly "+ Log Dose Manually", patch 28) still opens
 - Log: the dose log lists the seeded doses
 - no error boundary, no page errors, no request for the never-captured
   MedicationProgressBar chunk
@@ -52,7 +53,7 @@ STORES_READY = """() => new Promise(r => { const q = indexedDB.open('GLPalDB');
   q.onsuccess = () => { const ok = q.result.objectStoreNames.contains('protocols');
   q.result.close(); r(ok); }; q.onerror = () => r(false); })"""
 
-DOSES_GRID_COLS = """() => { const t=[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Total Doses');
+DOSES_GRID_COLS = """() => { const t=[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Current Level');
   if (!t) return null; const g=t.closest('.grid'); if (!g) return null;
   return getComputedStyle(g).gridTemplateColumns.split(' ').length; }"""
 
@@ -117,11 +118,12 @@ def main():
                       "Dosing Plans" not in body and "Custom Plan" not in body and "+ Schedule" not in body)
             for card in ("Cost/Month", "Current Dose", "Planned Doses"):
                 rep.check("HIDE", f"{card} card hidden", card not in body)
-            for card in ("Total Doses", "Current Level", "Logged Doses"):
+            rep.check("HIDE", "Total Doses card hidden (patch 32)", "Total Doses" not in body)
+            for card in ("Current Level", "Logged Doses", "Avg Peak (14d)"):
                 rep.check("HIDE", f"{card} card remains", card in body)
             rep.check("HIDE", "Log Dose Manually label gone", "Log Dose Manually" not in body)
             cols = pg.evaluate(DOSES_GRID_COLS)
-            rep.check("HIDE", "Doses card grid is 4 columns at desktop width (patch 30 adds Avg Peak)", cols == 4, f"{cols} columns")
+            rep.check("HIDE", "Doses card grid is 3 columns (patch 32)", cols == 3, f"{cols} columns")
             pg.get_by_role("button", name="Log Dose", exact=True).click()
             pg.wait_for_timeout(1000)
             rep.check("HIDE", "Log Dose button opens the dose form", "Cancel" in pg.inner_text("body"))

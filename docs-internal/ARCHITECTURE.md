@@ -431,8 +431,11 @@ unchanged; the daily-log dialog's title still reads "Quick Log".
   the modelled total level in the last 336 h whose peak has already happened,
   15-minute sampling; `--` when there are none.
 - Both use `__glpalLevels` / `__glpalTotalAt`, which group records exactly as
-  the Current Level card does. The Doses card grid is `grid-cols-2
-  lg:grid-cols-4`.
+  the Current Level card does.
+- **Total Doses card hidden** (patch 32). It counted every dose record; Logged
+  Doses counts only `isManual` records, and the difference is plan-generated
+  doses. The Doses card grid is `grid-cols-3`: Current Level, Logged Doses,
+  Avg Peak (14d).
 
 ## 12. Recolour
 
